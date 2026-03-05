@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Landing.css';
-import './Login.js';
-import './Register.js';
+import './Login.jsx';
+import './Register.jsx';
 
 
 
