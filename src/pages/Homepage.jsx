@@ -1,5 +1,6 @@
 import { useState } from "react";
 import '../styles/Homepage.css';
+import { Link, useNavigate } from "react-router-dom";
 
 const donorsList = [
     { id: 1, name: 'Fatima Rahman', bloodGroup: 'A+', location: 'Dhaka', lastDonation: '2 weeks ago', available: true },
@@ -16,6 +17,7 @@ const bloodGroups = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 function Homepage() {
     const [selectedBloodGroup, setSelectedBloodGroup] = useState('All');
+    const navigate = useNavigate();
 
     const filteredDonors = selectedBloodGroup === 'All' ? donorsList : donorsList.filter(d => d.bloodGroup === selectedBloodGroup);
 
@@ -31,10 +33,6 @@ function Homepage() {
         alert('Donate feature - Would redirect to donation registration form');
     }
 
-    function handleFindDonor() {
-        alert('Find Donor feature - Would open advanced search');
-    }
-
     function handleChat() {
         alert('Chat feature - Would open messaging system');
     }
@@ -45,6 +43,7 @@ function Homepage() {
 
     return (
         <>
+            {/* Header */}
             <header className="header">
                 <div className="header-left">
                     <div>
@@ -53,9 +52,8 @@ function Homepage() {
                     </div>
                 </div>
                 <div className="header-right">
-                    {/* Profile icon only */}
                     <div className="profile-icon" title="User Profile">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#b71c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#b71c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="7" r="4" />
                             <path d="M5.5 21a8.38 8.38 0 0 1 13 0" />
                         </svg>
@@ -63,8 +61,9 @@ function Homepage() {
                 </div>
             </header>
 
-
+            {/* Main Container */}
             <div className="main-container">
+                {/* Sidebar */}
                 <aside className="sidebar">
                     <h2>Quick Actions</h2>
                     <button className="logout-btn" onClick={handleLogout}>
@@ -88,6 +87,7 @@ function Homepage() {
                     </div>
                 </aside>
 
+                {/* Main Content */}
                 <main className="main-content">
                     <div className="action-bar">
                         <div className="blood-filter">
@@ -97,7 +97,7 @@ function Homepage() {
                         </div>
                         <div className="action-buttons">
                             <button className="btn-donate" onClick={handleDonate}>Donate Blood</button>
-                            <button className="btn-find-donor" onClick={handleFindDonor}>Find a Donor</button>
+                            <Link to="/find-donor" className="btn-find-donor">Find a Donor</Link>
                             <button className="btn-chat" onClick={handleChat} title="Live Chat">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>

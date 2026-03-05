@@ -1,5 +1,5 @@
 import React from "react";
-import "./FindDonor.css";
+import '../styles/FindDonor.css';
 
 const donors = [
     {
