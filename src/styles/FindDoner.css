@@ -1,0 +1,125 @@
+.find-container {
+    padding: 80px 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header */
+
+.find-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.find-header h1 {
+    font-size: 2.8rem;
+    color: #d32f2f;
+    margin-bottom: 10px;
+}
+
+.find-header p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Search Box */
+
+.search-box {
+    max-width: 900px;
+    margin: 0 auto 50px auto;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-box select,
+.search-box input {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.search-btn {
+    padding: 12px 24px;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.search-btn:hover {
+    background: #b71c1c;
+}
+
+/* Donor Grid */
+
+.donor-grid {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+/* Donor Card */
+
+.donor-card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transition: 0.3s;
+}
+
+.donor-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Blood group circle */
+
+.blood {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    border-radius: 50%;
+    background: #d32f2f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.donor-card h3 {
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.donor-card p {
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Button */
+
+.contact-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    background: #d32f2f;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.contact-btn:hover {
+    background: #b71c1c;
+}
