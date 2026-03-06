@@ -1,0 +1,198 @@
+/* ── Page container ── */
+.eligibility-page {
+  max-width: 860px;               /* slightly wider card */
+  margin: 0 auto;
+  padding: 32px 16px 80px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+  background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
+  color: white;
+  border-radius: 16px 16px 0 0;
+  margin: -32px -16px 40px -16px;
+}
+
+.hero h1 {
+  font-size: 2.1rem;
+  margin-bottom: 0.7rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 1.18rem;
+  opacity: 0.95;
+}
+
+/* ── Main content card ── */
+.content-wrapper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+  padding: 48px 40px 56px;     /* noticeably more padding on all sides */
+}
+
+/* Headings */
+.card h2 {
+  font-size: 1.9rem;
+  color: #c8102e;
+  margin: 0 0 2.2rem 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Instruction text */
+.warning,
+.hero + .content-wrapper > p:first-of-type {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: #444;
+  margin: 0 0 2.8rem 0;
+  text-align: center;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Each question block */
+.question,
+.form-grid > div,
+.full-width {
+  margin-bottom: 2.6rem;          /* ← increased vertical space between questions */
+}
+
+.question-label,
+.input-label {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.9rem;
+  display: block;
+}
+
+/* Yes/No radio group */
+.custom-radio {
+  display: flex;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.radio-box {
+  min-width: 100px;
+  padding: 13px 28px;
+  font-size: 1.12rem;
+  font-weight: 600;
+  border: 2px solid #c8102e;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  background: white;
+  color: #c8102e;
+  text-align: center;
+}
+
+.radio-box:hover {
+  background: #fff5f5;
+}
+
+.radio-box.selected {
+  background: #c8102e;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.18);
+}
+
+/* Form inputs & selects */
+.large-input,
+.large-select {
+  font-size: 1.08rem;
+  padding: 13px 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.large-input:focus,
+.large-select:focus {
+  border-color: #c8102e;
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.12);
+  outline: none;
+}
+
+/* Button */
+.btn.primary {
+  font-size: 1.14rem;
+  padding: 15px 48px;
+  min-width: 220px;
+  background: #c8102e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: block;
+  margin: 3rem auto 1rem;       /* centered + good top/bottom space */
+}
+
+.btn.primary:hover {
+  background: #a00d24;
+}
+
+.btn.secondary {
+  background: #555;
+}
+
+.btn.secondary:hover {
+  background: #444;
+}
+
+/* Location section */
+.location-section {
+  margin: 3rem 0 2.5rem;
+}
+
+.location-section h3 {
+  font-size: 1.35rem;
+  margin-bottom: 1.4rem;
+  color: #333;
+}
+
+/* Footer note */
+.footer-note {
+  text-align: center;
+  color: #666;
+  font-size: 0.97rem;
+  margin-top: 4rem;
+  line-height: 1.6;
+}
+
+/* ── Mobile adjustments ── */
+@media (max-width: 680px) {
+  .content-wrapper {
+    padding: 36px 24px 48px;
+  }
+
+  .hero {
+    padding: 40px 20px 32px;
+    margin: -32px -16px 32px -16px;
+  }
+
+  .custom-radio {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .radio-box {
+    width: 100%;
+  }
+
+  .btn.primary {
+    width: 100%;
+    padding: 15px 24px;
+  }
+}

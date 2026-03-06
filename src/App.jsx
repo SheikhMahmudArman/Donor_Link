@@ -9,6 +9,8 @@ import AboutUs       from './pages/AboutUs';         // adjust path if different
 import HowItWorks    from './pages/HowItWorks';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Contact       from './pages/Contact';
+import EligibilityChecker from './pages/EligibilityChecker';
+
 function App() {
   return (
     <BrowserRouter>
@@ -22,6 +24,7 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/eligibility" element={<EligibilityChecker />} />
       </Routes>
     </BrowserRouter>
   );

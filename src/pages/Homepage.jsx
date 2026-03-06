@@ -1,6 +1,7 @@
 import { useState } from "react";
 import '../styles/Homepage.css';
 import { Link, useNavigate } from "react-router-dom";
+import './EligibilityChecker.jsx';
 
 const donorsList = [
     { id: 1, name: 'Fatima Rahman', bloodGroup: 'A+', location: 'Dhaka', lastDonation: '2 weeks ago', available: true },
@@ -89,15 +90,18 @@ function Homepage() {
 
                 {/* Main Content */}
                 <main className="main-content">
-                    <div className="action-bar">
+                    <div className="action-bar">s
                         <div className="blood-filter">
                             <select value={selectedBloodGroup} onChange={e => setSelectedBloodGroup(e.target.value)}>
                                 {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
                             </select>
                         </div>
                         <div className="action-buttons">
+                            <Link to="/eligibility" className="btn-donate">
+                                Donate Blood
+                            </Link>
                             <button className="btn-donate" onClick={handleDonate}>Donate Blood</button>
-                            <Link to="/find-donor" className="btn-find-donor">Find a Donor</Link>
+                            
                             <button className="btn-chat" onClick={handleChat} title="Live Chat">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>

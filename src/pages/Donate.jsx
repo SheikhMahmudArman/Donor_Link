@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/Donate.css";
-
+import './EligibilityChecker.jsx';
 function Donate() {
     const [formData, setFormData] = useState({
         name: "",
@@ -25,6 +25,7 @@ function Donate() {
         <div className="donate-container">
             <div className="donate-card">
                 <h2>Donate Blood</h2>
+                
                 <p>Become a lifesaver today</p>
 
                 <form onSubmit={handleSubmit}>
