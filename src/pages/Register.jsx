@@ -2,9 +2,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Register.css";
 
-const cityData = {
-  Dhaka: ["Dhanmondi", "Gulshan", "Mirpur"],
-  Chittagong: ["Agrabad", "Pahartali", "Halishahar"],
+// ── Full Location Data ──
+const divisions = [
+  'Barishal', 'Chattogram', 'Dhaka', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet'
+];
+
+const districtsByDivision = {
+  Barishal: ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+  Chattogram: ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', "Cox's Bazar", 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+  Dhaka: ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+  Khulna: ['Bagerhat', 'Chuadanga', 'Jashore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+  Mymensingh: ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
+  Rajshahi: ['Bogura', 'Joypurhat', 'Naogaon', 'Natore', 'Chapainawabganj', 'Pabna', 'Rajshahi', 'Sirajganj'],
+  Rangpur: ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+  Sylhet: ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+};
+
+const citiesByDistrict = {
+  Dhaka: ['Dhaka City North', 'Dhaka City South', 'Savar', 'Keraniganj', 'Narayanganj', 'Gazipur City', 'Other'],
+  Chattogram: ['Chattogram City', "Cox's Bazar", 'Comilla City', 'Other'],
 };
 
 function Register() {
@@ -12,16 +28,25 @@ function Register() {
 
   const [form, setForm] = useState({
     emailOrPhone: "",
-    city: "",
-    area: "",
+    division: "",
+    district: "",
+    cityArea: "",
     password: "",
     confirmPassword: "",
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+    const { name, value } = e.target;
+    setForm(prev => {
+      const newForm = { ...prev, [name]: value };
+      if (name === 'division') {
+        newForm.district = '';
+        newForm.cityArea = '';
+      }
+      if (name === 'district') {
+        newForm.cityArea = '';
+      }
+      return newForm;
     });
   };
 
@@ -29,64 +54,113 @@ function Register() {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      alert("Password does not match!");
+      alert("Passwords do not match!");
       return;
     }
+
+    if (!form.division || !form.district) {
+      alert("Please select Division and District.");
+      return;
+    }
+
+    // Save registration data to localStorage
+    localStorage.setItem('user-registration', JSON.stringify({
+      emailOrPhone: form.emailOrPhone,
+      division: form.division,
+      district: form.district,
+      cityArea: form.cityArea,
+    }));
 
     alert("Registration Successful!");
     navigate("/login");
   };
 
   return (
-    <div className="register-container">
-      <form className="register-card" onSubmit={handleSubmit}>
-        <h2>Register</h2>
+    <div className="register-page">
+      <div className="register-container">
+        <form className="register-card" onSubmit={handleSubmit}>
+          <h1>Create Account</h1>
+          <p className="subtitle">Join Donor Link and help save lives</p>
 
-        <input
-          type="text"
-          name="emailOrPhone"
-          placeholder="Email or Phone"
-          required
-          onChange={handleChange}
-        />
+          <div className="form-group">
+            <label>Email or Phone</label>
+            <input
+              type="text"
+              name="emailOrPhone"
+              value={form.emailOrPhone}
+              onChange={handleChange}
+              placeholder="Enter your email or phone number"
+              required
+            />
+          </div>
 
-        <select name="city" required onChange={handleChange}>
-          <option value="">Select City</option>
-          {Object.keys(cityData).map((city) => (
-            <option key={city}>{city}</option>
-          ))}
-        </select>
+          <div className="form-group">
+            <label>Division</label>
+            <select name="division" value={form.division} onChange={handleChange} required>
+              <option value="">Select Division</option>
+              {divisions.map(div => (
+                <option key={div} value={div}>{div}</option>
+              ))}
+            </select>
+          </div>
 
-        {form.city && (
-          <select name="area" required onChange={handleChange}>
-            <option value="">Select Area</option>
-            {cityData[form.city].map((area) => (
-              <option key={area}>{area}</option>
-            ))}
-          </select>
-        )}
+          {form.division && (
+            <div className="form-group">
+              <label>District</label>
+              <select name="district" value={form.district} onChange={handleChange} required>
+                <option value="">Select District</option>
+                {(districtsByDivision[form.division] || []).map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          onChange={handleChange}
-        />
+          {(form.division === 'Dhaka' || form.division === 'Chattogram') &&
+           form.district &&
+           citiesByDistrict[form.district] && (
+            <div className="form-group">
+              <label>Area (optional)</label>
+              <select name="cityArea" value={form.cityArea} onChange={handleChange}>
+                <option value="">Select Area</option>
+                {citiesByDistrict[form.district].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          required
-          onChange={handleChange}
-        />
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Create a strong password"
+              required
+            />
+          </div>
 
-        <button type="submit">Register</button>
-        <p className="switch-link" onClick={() => navigate("/login")}>
-          Already have an account? Log in
-        </p>
-      </form>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              required
+            />
+          </div>
+
+          <button type="submit" className="register-btn">Register</button>
+
+          <p className="login-link">
+            Already have an account? <span onClick={() => navigate("/login")}>Log in</span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import '../styles/Homepage.css';
 import { Link, useNavigate } from "react-router-dom";
 import './EligibilityChecker.jsx';
+import Profile from '../pages/Profile';
 
 const donorsList = [
     { id: 1, name: 'Fatima Rahman', bloodGroup: 'A+', location: 'Dhaka', lastDonation: '2 weeks ago', available: true },
@@ -53,7 +54,12 @@ function Homepage() {
                     </div>
                 </div>
                 <div className="header-right">
-                    <div className="profile-icon" title="User Profile">
+                    <div 
+                        className="profile-icon" 
+                        title="View Profile"
+                        onClick={() => navigate("/profile")}   // ← this line does the magic
+                        style={{ cursor: 'pointer' }}          // makes it look clickable
+                    >
                         <svg viewBox="0 0 24 24" fill="none" stroke="#b71c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="7" r="4" />
                             <path d="M5.5 21a8.38 8.38 0 0 1 13 0" />

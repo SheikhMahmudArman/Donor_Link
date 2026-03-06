@@ -8,6 +8,7 @@ import FindDonor from "./pages/FindDonor";
 import AboutUs from './pages/AboutUs';         // adjust path if different
 import HowItWorks from './pages/HowItWorks';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Profile from './pages/Profile';
 import Contact from './pages/Contact';
 import EligibilityChecker from './pages/EligibilityChecker';
 import Chat from './pages/Chat';
@@ -26,6 +27,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/eligibility" element={<EligibilityChecker />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

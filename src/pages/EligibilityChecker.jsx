@@ -4,7 +4,7 @@ import '../styles/EligibilityChecker.css';
 
 // ── Storage Keys ──
 const FORM_KEY = 'blood-donor-eligibility-form';
-const SUBMITTED_KEY = 'blood-donor-eligibility-submitted';
+const PERMANENT_DISQUAL_KEY = 'blood-donor-permanent-disqual';
 
 // ── Deal Breakers (Permanent Disqualifiers) ──
 const dealBreakers = [
@@ -40,38 +40,36 @@ const citiesByDistrict = {
 function EligibilityChecker() {
   const navigate = useNavigate();
 
-  // ── Submitted State (one-time form) ──
-  const [isSubmitted, setIsSubmitted] = useState(() => {
-    return localStorage.getItem(SUBMITTED_KEY) === 'true';
+  // Permanent lock only if Yes in Step 1 ever
+  const [isPermanentlyLocked, setIsPermanentlyLocked] = useState(() => {
+    return localStorage.getItem(PERMANENT_DISQUAL_KEY) === 'true';
   });
 
   // ── Form States ──
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // 0 = intro screen
   const [permanentDisqual, setPermanentDisqual] = useState(false);
   const [basicEligible, setBasicEligible] = useState(false);
 
-  // Step 1
+  // Step 1 answers (yes / no / unknown)
   const [step1Answers, setStep1Answers] = useState({});
 
-  // Step 2
+  // Step 2 fields
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [lastDonation, setLastDonation] = useState('never');
   const [feelingWell, setFeelingWell] = useState(null);
   const [pregnantOrRecentBirth, setPregnantOrRecentBirth] = useState(null);
-
-  // Location
   const [division, setDivision] = useState('');
   const [district, setDistrict] = useState('');
   const [cityArea, setCityArea] = useState('');
 
-  // ── Load saved form data on mount ──
+  // ── Load saved data ──
   useEffect(() => {
     const saved = localStorage.getItem(FORM_KEY);
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        setStep(data.step || 1);
+        setStep(data.step ?? 0);
         setPermanentDisqual(data.permanentDisqual || false);
         setBasicEligible(data.basicEligible || false);
         setStep1Answers(data.step1Answers || {});
@@ -84,52 +82,48 @@ function EligibilityChecker() {
         setDistrict(data.district || '');
         setCityArea(data.cityArea || '');
       } catch (err) {
-        console.warn('Failed to load saved eligibility form', err);
+        console.warn('Failed to load saved form', err);
       }
     }
+
+    const locked = localStorage.getItem(PERMANENT_DISQUAL_KEY) === 'true';
+    setIsPermanentlyLocked(locked);
+    if (locked) setStep(3); // jump to result if permanently locked
   }, []);
 
-  // ── Save form data whenever relevant state changes ──
+  // ── Save on change ──
   useEffect(() => {
-    if (isSubmitted) return; // no need to keep saving after final submission
-
     const data = {
       step,
       permanentDisqual,
       basicEligible,
       step1Answers,
-      age,
-      weight,
-      lastDonation,
-      feelingWell,
-      pregnantOrRecentBirth,
-      division,
-      district,
-      cityArea,
+      age, weight, lastDonation, feelingWell, pregnantOrRecentBirth,
+      division, district, cityArea,
     };
-
     localStorage.setItem(FORM_KEY, JSON.stringify(data));
-  }, [
-    step, permanentDisqual, basicEligible, step1Answers,
-    age, weight, lastDonation, feelingWell, pregnantOrRecentBirth,
-    division, district, cityArea, isSubmitted
-  ]);
+  }, [step, permanentDisqual, basicEligible, step1Answers, age, weight, lastDonation, feelingWell, pregnantOrRecentBirth, division, district, cityArea]);
 
   // ── Helpers ──
-  const markAsSubmitted = () => {
-    localStorage.setItem(SUBMITTED_KEY, 'true');
-    setIsSubmitted(true);
-  };
-
   const handleStep1Change = (id, value) => {
     setStep1Answers(prev => ({ ...prev, [id]: value }));
   };
 
   const step1Complete = () => {
-    const hasYes = Object.values(step1Answers).some(val => val === 'yes');
-    setPermanentDisqual(hasYes);
-    setStep(hasYes ? 3 : 2);
+    const hasYes = Object.values(step1Answers).some(v => v === 'yes');
+
+    if (hasYes) {
+      setPermanentDisqual(true);
+      localStorage.setItem(PERMANENT_DISQUAL_KEY, 'true');
+      setIsPermanentlyLocked(true);
+      setStep(3);
+    } else {
+      setPermanentDisqual(false);
+      setStep(1.5); // intermediate info screen
+    }
   };
+
+  const goToStep2 = () => setStep(2);
 
   const step2Complete = () => {
     const ageNum = parseInt(age, 10) || 0;
@@ -145,54 +139,11 @@ function EligibilityChecker() {
 
     setBasicEligible(eligible);
     setStep(3);
-    markAsSubmitted(); // Form is now final — cannot be changed
   };
 
   const goHome = () => navigate('/homepage');
-  const goToDonate = () => navigate('/donate');
-
-  const resetForm = () => {
-    localStorage.removeItem(FORM_KEY);
-    localStorage.removeItem(SUBMITTED_KEY);
-    setIsSubmitted(false);
-    setStep(1);
-    setPermanentDisqual(false);
-    setBasicEligible(false);
-    setStep1Answers({});
-    setAge('');
-    setWeight('');
-    setLastDonation('never');
-    setFeelingWell(null);
-    setPregnantOrRecentBirth(null);
-    setDivision('');
-    setDistrict('');
-    setCityArea('');
-  };
 
   const allStep1Answered = dealBreakers.every(q => step1Answers[q.id] !== undefined);
-
-  // ── Render ──
-  if (isSubmitted) {
-    return (
-      <div className="eligibility-page">
-        <div className="hero">
-          <h1>Thank You</h1>
-          <p>You have already completed the blood donor eligibility check.</p>
-        </div>
-
-        <div className="content-wrapper" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p>This form can only be submitted once.</p>
-          <button className="btn primary large" onClick={goHome}>
-            Go to Home Page
-          </button>
-          {/* Optional: allow admin/debug reset */}
-          {/* <button onClick={resetForm} style={{ marginTop: '2rem', color: '#666' }}>
-            Reset form (for testing)
-          </button> */}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="eligibility-page">
@@ -202,18 +153,33 @@ function EligibilityChecker() {
       </div>
 
       <div className="content-wrapper">
+
+        {step === 0 && (
+          <div className="card intro-card">
+            <h2>Welcome to the Blood Donor Eligibility Checker</h2>
+            <p className="warning">
+              This quick check helps determine if you may be able to donate blood safely.<br /><br />
+              <strong>Important:</strong> If you answer <strong>YES</strong> to any permanent disqualifier question, this will be your final result — you will not be able to change it later.<br /><br />
+              If you answer No or "Didn't test" to all questions, you can come back and update your answers anytime.
+            </p>
+            <button className="btn primary large" onClick={() => setStep(1)}>
+              Continue
+            </button>
+          </div>
+        )}
+
         {step === 1 && (
           <div className="card">
             <h2>Step 1: Permanent Disqualifiers</h2>
             <p className="warning">
-              If you answer <strong>YES</strong> to any question below, you cannot donate blood.
+              If you answer <strong>YES</strong> to any question below, you cannot donate blood ever. This result will be permanent.
             </p>
 
             {dealBreakers.map(q => (
               <div key={q.id} className="question">
                 <div className="question-label">{q.label}</div>
-                <div className="radio-group custom-radio">
-                  <label className={`radio-box ${step1Answers[q.id] === 'yes' ? 'selected' : ''}`}>
+                <div className="radio-group custom-radio three-options">
+                  <label className={`radio-box ${step1Answers[q.id] === 'yes' ? 'selected danger' : ''}`}>
                     <input
                       type="radio"
                       name={q.id}
@@ -223,7 +189,7 @@ function EligibilityChecker() {
                     />
                     <span>Yes</span>
                   </label>
-                  <label className={`radio-box ${step1Answers[q.id] === 'no' ? 'selected' : ''}`}>
+                  <label className={`radio-box ${step1Answers[q.id] === 'no' ? 'selected safe' : ''}`}>
                     <input
                       type="radio"
                       name={q.id}
@@ -232,6 +198,16 @@ function EligibilityChecker() {
                       onChange={() => handleStep1Change(q.id, 'no')}
                     />
                     <span>No</span>
+                  </label>
+                  <label className={`radio-box ${step1Answers[q.id] === 'unknown' ? 'selected neutral' : ''}`}>
+                    <input
+                      type="radio"
+                      name={q.id}
+                      value="unknown"
+                      checked={step1Answers[q.id] === 'unknown'}
+                      onChange={() => handleStep1Change(q.id, 'unknown')}
+                    />
+                    <span>Didn't test</span>
                   </label>
                 </div>
               </div>
@@ -247,37 +223,51 @@ function EligibilityChecker() {
           </div>
         )}
 
+        {step === 1.5 && (
+          <div className="card info-card">
+            <h2>Next: Basic Eligibility Check</h2>
+            <p>
+              You passed the permanent disqualifiers (no YES answers).<br /><br />
+              Now we will check temporary / current eligibility factors (age, weight, recent donation, feeling well today, pregnancy status, location).<br /><br />
+              <strong>Important:</strong> If you are not eligible right now, you may become eligible later — after some time passes, recovery, or other changes.<br />
+              You can come back and update this section anytime.
+            </p>
+            <button className="btn primary large" onClick={goToStep2}>
+              Continue to Basic Check
+            </button>
+          </div>
+        )}
+
         {step === 2 && (
           <div className="card">
             <h2>Step 2: Basic Eligibility & Location</h2>
 
             <div className="form-grid">
-              {/* Age */}
               <div>
                 <label className="input-label">Your age (years)</label>
                 <input
                   type="number"
                   min="17"
+                  max="65"
+                  step="1"
                   value={age}
                   onChange={e => setAge(e.target.value)}
                   className="large-input"
                 />
               </div>
 
-              {/* Weight */}
               <div>
                 <label className="input-label">Your weight (kg)</label>
                 <input
                   type="number"
-                  step="0.5"
                   min="45"
+                  step="0.5"
                   value={weight}
                   onChange={e => setWeight(e.target.value)}
                   className="large-input"
                 />
               </div>
 
-              {/* Last donation */}
               <div>
                 <label className="input-label">Last whole blood donation?</label>
                 <select
@@ -292,7 +282,6 @@ function EligibilityChecker() {
                 </select>
               </div>
 
-              {/* Feeling well */}
               <div className="full-width">
                 <div className="question-label">Do you feel well today? (no fever, cold, etc.)</div>
                 <div className="radio-group custom-radio">
@@ -319,7 +308,6 @@ function EligibilityChecker() {
                 </div>
               </div>
 
-              {/* Pregnant */}
               <div className="full-width">
                 <div className="question-label">
                   Are you currently pregnant or gave birth in the last 6 months?
@@ -427,21 +415,19 @@ function EligibilityChecker() {
 
         {step === 3 && (
           <div className="card result-card">
-            {permanentDisqual ? (
+            {permanentDisqual || isPermanentlyLocked ? (
               <>
                 <h2 className="fail">Not Eligible to Donate</h2>
                 <p className="permanent-note">
-                  You are <strong>permanently deferred</strong> from donating blood.
+                  You are <strong>permanently deferred</strong> from donating blood due to one or more answers in Step 1.
                 </p>
-                <p>You can still receive blood if needed in the future.</p>
+                <p>This decision is final and cannot be changed.</p>
               </>
             ) : basicEligible ? (
               <>
                 <h2 className="success">You appear eligible to donate!</h2>
-                <p>Based on your answers, you meet the basic requirements.</p>
-                <p className="note">
-                  Final eligibility will be confirmed at the donation center.
-                </p>
+                <p>Based on your current answers, you meet the basic requirements.</p>
+                <p className="note">Final eligibility will be confirmed at the donation center.</p>
                 <p className="highlight">Thank you for wanting to save lives!</p>
               </>
             ) : (
@@ -452,9 +438,15 @@ function EligibilityChecker() {
               </>
             )}
 
-            <button className="btn secondary large" onClick={goHome}>
+            <button className="btn secondary large" onClick={goHome} style={{ marginTop: '2rem' }}>
               Go to Home Page
             </button>
+
+            {!permanentDisqual && !isPermanentlyLocked && (
+              <button className="btn outline large" onClick={() => setStep(2)} style={{ marginTop: '1rem' }}>
+                Edit / Update Answers
+              </button>
+            )}
           </div>
         )}
       </div>
