@@ -1,73 +1,211 @@
-import React from "react";
-import '../styles/FindDonor.css';
-
-const donors = [
-    {
-        name: "Rahim Ahmed",
-        blood: "A+",
-        location: "Dhaka",
-        phone: "017XXXXXXXX",
-    },
-    {
-        name: "Nusrat Jahan",
-        blood: "O-",
-        location: "Mirpur",
-        phone: "018XXXXXXXX",
-    },
-    {
-        name: "Karim Hasan",
-        blood: "B+",
-        location: "Uttara",
-        phone: "019XXXXXXXX",
-    },
-];
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/FindDonor.css";
 
 function FindDonor() {
-    return (
-        <div className="find-container">
+  const navigate = useNavigate();
 
-            {/* Header */}
-            <div className="find-header">
-                <h1>Find a Blood Donor</h1>
-                <p>Search for available donors near your location</p>
+  const [form, setForm] = useState({
+    guardianPhone: "",
+    userPhone: "",
+    requiredDate: "",
+    timeSlot: "",
+    hospitalName: "",
+    division: "",
+    district: "",
+    area: "",
+    patientName: "",
+    bloodGroup: "",
+    unitsNeeded: "1",
+    urgency: "normal",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+        e.preventDefault();
+
+        // Basic validation
+        if (!form.guardianPhone || !form.requiredDate || !form.hospitalName || !form.bloodGroup) {
+        alert("Please fill all required fields.");
+        return;
+        }
+
+        // Simulate submission (in real app → send to backend/API here)
+        console.log("Blood request submitted:", form);
+
+        // No popup → directly go back to homepage
+        navigate("/homepage");
+    };
+
+  return (
+    <div className="find-donor-page">
+      <div className="find-donor-container">
+        <form className="find-donor-card" onSubmit={handleSubmit}>
+          <h1>Request Blood Donor</h1>
+          <p className="subtitle">
+            Fill in the details below so we can help connect you with nearby donors
+          </p>
+
+          <div className="form-grid">
+            {/* Patient Info */}
+            <div className="form-group">
+              <label>Patient's Name *</label>
+              <input
+                type="text"
+                name="patientName"
+                value={form.patientName}
+                onChange={handleChange}
+                placeholder="Full name of the patient"
+                required
+              />
             </div>
 
-            {/* Search Section */}
-            <div className="search-box">
-                <select>
-                    <option>Select Blood Group</option>
-                    <option>A+</option>
-                    <option>A-</option>
-                    <option>B+</option>
-                    <option>B-</option>
-                    <option>O+</option>
-                    <option>O-</option>
-                    <option>AB+</option>
-                    <option>AB-</option>
-                </select>
-
-                <input type="text" placeholder="Enter Location" />
-
-                <button className="search-btn">Search</button>
+            <div className="form-group">
+              <label>Blood Group Required *</label>
+              <select name="bloodGroup" value={form.bloodGroup} onChange={handleChange} required>
+                <option value="">Select blood group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
             </div>
 
-            {/* Donor List */}
-            <div className="donor-grid">
-                {donors.map((donor, index) => (
-                    <div className="donor-card" key={index}>
-                        <div className="blood">{donor.blood}</div>
-                        <h3>{donor.name}</h3>
-                        <p>📍 {donor.location}</p>
-                        <p>📞 {donor.phone}</p>
+            <div className="form-group">
+              <label>Units Needed *</label>
+              <input
+                type="number"
+                name="unitsNeeded"
+                value={form.unitsNeeded}
+                onChange={handleChange}
+                min="1"
+                max="10"
+                placeholder="Number of bags"
+                required
+              />
+            </div>
 
-                        <button className="contact-btn">
-                            Contact Donor
-                        </button>
-                    </div>
+            {/* Contact */}
+            <div className="form-group">
+              <label>Guardian / Family Phone *</label>
+              <input
+                type="tel"
+                name="guardianPhone"
+                value={form.guardianPhone}
+                onChange={handleChange}
+                placeholder="Primary contact number"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Your Phone (optional)</label>
+              <input
+                type="tel"
+                name="userPhone"
+                value={form.userPhone}
+                onChange={handleChange}
+                placeholder="Your contact number"
+              />
+            </div>
+
+            {/* When & Where */}
+            <div className="form-group">
+              <label>Date Blood Required *</label>
+              <input
+                type="date"
+                name="requiredDate"
+                value={form.requiredDate}
+                onChange={handleChange}
+                min={new Date().toISOString().split("T")[0]}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Preferred Time Slot *</label>
+              <select name="timeSlot" value={form.timeSlot} onChange={handleChange} required>
+                <option value="">Select time</option>
+                <option value="Morning (6AM-12PM)">Morning (6AM - 12PM)</option>
+                <option value="Afternoon (12PM-6PM)">Afternoon (12PM - 6PM)</option>
+                <option value="Evening (6PM-10PM)">Evening (6PM - 10PM)</option>
+                <option value="Anytime">Anytime</option>
+              </select>
+            </div>
+
+            <div className="form-group full-width">
+              <label>Hospital Name *</label>
+              <input
+                type="text"
+                name="hospitalName"
+                value={form.hospitalName}
+                onChange={handleChange}
+                placeholder="e.g. Dhaka Medical College Hospital"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Division *</label>
+              <select name="division" value={form.division} onChange={handleChange} required>
+                <option value="">Select Division</option>
+                {["Barishal", "Chattogram", "Dhaka", "Khulna", "Mymensingh", "Rajshahi", "Rangpur", "Sylhet"].map(d => (
+                  <option key={d} value={d}>{d}</option>
                 ))}
+              </select>
             </div>
-        </div>
-    );
+
+            <div className="form-group">
+              <label>District / Area *</label>
+              <input
+                type="text"
+                name="area"
+                value={form.area}
+                onChange={handleChange}
+                placeholder="e.g. Shahbag, Mirpur, Agrabad"
+                required
+              />
+            </div>
+
+            {/* Urgency */}
+            <div className="form-group full-width">
+              <label>Urgency Level</label>
+              <div className="radio-group">
+                {["Normal", "Urgent", "Emergency"].map(level => (
+                  <label key={level} className="radio-label">
+                    <input
+                      type="radio"
+                      name="urgency"
+                      value={level.toLowerCase()}
+                      checked={form.urgency === level.toLowerCase()}
+                      onChange={handleChange}
+                    />
+                    <span>{level}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" className="submit-btn">
+            Submit Blood Request
+          </button>
+
+          <p className="back-link" onClick={() => navigate("/homepage")}>
+            ← Back to Home
+          </p>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default FindDonor;
