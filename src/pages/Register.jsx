@@ -83,6 +83,9 @@ function Register() {
         />
 
         <button type="submit">Register</button>
+        <p className="switch-link" onClick={() => navigate("/login")}>
+          Already have an account? Log in
+        </p>
       </form>
     </div>
   );

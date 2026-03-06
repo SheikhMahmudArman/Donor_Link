@@ -50,7 +50,7 @@ const Landing = () => {
           <p>
             O- needed urgently in Kurmitola General Hospital – can you help today?
           </p>
-          <Link to="/find-donor" className="btn btn-urgent">
+          <Link to="/register" className="btn btn-urgent">
             Find / Respond
           </Link>
         </div>
@@ -64,7 +64,7 @@ const Landing = () => {
             <div className="icon">🩸</div>
             <h3>Donate Blood</h3>
             <p>Join our community of life-savers and donate today.</p>
-            <Link to="/donate" className="btn btn-secondary">
+            <Link to="/register" className="btn btn-secondary">
               Donate Now
             </Link>
           </div>
@@ -73,7 +73,7 @@ const Landing = () => {
             <div className="icon">🔍</div>
             <h3>Find a Donor</h3>
             <p>Search for compatible donors near you in minutes.</p>
-            <Link to="/find-donor" className="btn btn-secondary">
+            <Link to="/register" className="btn btn-secondary">
               Search Donors
             </Link>
           </div>
@@ -82,7 +82,7 @@ const Landing = () => {
             <div className="icon">🆎</div>
             <h3>Request Blood</h3>
             <p>Post an urgent request and connect with donors fast.</p>
-            <Link to="/request" className="btn btn-secondary">
+            <Link to="/register" className="btn btn-secondary">
               Make Request
             </Link>
           </div>
