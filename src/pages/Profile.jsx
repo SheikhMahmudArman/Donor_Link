@@ -2,12 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Profile.css';
 
+// ── Location Data ──
 const divisions = [
   'Barishal', 'Chattogram', 'Dhaka', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet'
 ];
 
-const districtsByDivision = { /* same as before - copy from Register.jsx */ };
-const citiesByDistrict = { /* same as before - copy from Register.jsx */ };
+const districtsByDivision = {
+  Barishal: ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+  Chattogram: ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', "Cox's Bazar", 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+  Dhaka: ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+  Khulna: ['Bagerhat', 'Chuadanga', 'Jashore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+  Mymensingh: ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
+  Rajshahi: ['Bogura', 'Joypurhat', 'Naogaon', 'Natore', 'Chapainawabganj', 'Pabna', 'Rajshahi', 'Sirajganj'],
+  Rangpur: ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+  Sylhet: ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+};
+
+const citiesByDistrict = {
+  Dhaka: ['Dhaka City North', 'Dhaka City South', 'Savar', 'Keraniganj', 'Narayanganj', 'Gazipur City', 'Other'],
+  Chattogram: ['Chattogram City', "Cox's Bazar", 'Comilla City', 'Other'],
+};
 
 function Profile() {
   const navigate = useNavigate();
@@ -20,7 +34,6 @@ function Profile() {
     fullName: '',
     bloodGroup: '',
     profilePic: null,
-    // eligibility fields
     isEligible: false,
     permanentDisqual: false,
     basicEligible: false,
@@ -31,7 +44,7 @@ function Profile() {
   const [previewPic, setPreviewPic] = useState(null);
 
   useEffect(() => {
-    // Load registration data
+    // Load registration data (email/phone, location)
     const savedReg = localStorage.getItem('user-registration');
     if (savedReg) {
       try {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/Donate.css";
-import './EligibilityChecker.jsx';
+
 function Donate() {
     const [formData, setFormData] = useState({
         name: "",
