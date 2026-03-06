@@ -35,7 +35,7 @@ function Homepage() {
     }
 
     function handleChat() {
-        alert('Chat feature - Would open messaging system');
+        navigate("/chat");
     }
 
     function handleContactDonor(donor) {
@@ -98,11 +98,11 @@ function Homepage() {
                         </div>
                         <div className="action-buttons">
                             <Link to="/eligibility" className="btn-donate">
-                            Donate Blood
-                        </Link>
-                        <Link to="/find-donor" className="btn-find-donor">
-                            Find Donor
-                        </Link>                            
+                                Donate Blood
+                            </Link>
+                            <Link to="/find-donor" className="btn-find-donor">
+                                Find Donor
+                            </Link>
                             <button className="btn-chat" onClick={handleChat} title="Live Chat">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
