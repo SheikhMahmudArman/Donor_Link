@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://localhost:5173/homepage -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="./donorlink_files/client"></script>
+
+    
+    <link rel="icon" type="image/svg+xml" href="http://localhost:5173/vite.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>donorlink</title>
+  <style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/index.css">body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+</style><style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/styles/Landing.css">/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.landing-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  color: white;
+  padding: 100px 20px 80px;
+  text-align: center;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.07" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,138.7C672,149,768,203,864,213.3C960,224,1056,192,1152,197.3C1248,203,1344,245,1392,266.7L1440,288L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom no-repeat;
+  background-size: cover;
+}
+
+.hero-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.logo {
+  font-size: 3.2rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.heart {
+  font-size: 3.8rem;
+  margin-right: 12px;
+}
+
+.tagline {
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+  opacity: 0.95;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 3.5rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 14px 32px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: white;
+  color: #d32f2f;
+}
+
+.btn-primary:hover {
+  background-color: #ffebee;
+  transform: translateY(-3px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+.btn-secondary,
+.btn-urgent {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+}
+
+.btn-secondary:hover,
+.btn-urgent:hover {
+  background-color: #b71c1c;
+  transform: translateY(-3px);
+}
+
+.btn-urgent {
+  padding: 12px 28px;
+  font-size: 1.1rem;
+}
+
+/* Urgent Banner */
+.urgent-banner {
+  background-color: #ffebee;
+  border-left: 6px solid #d32f2f;
+  padding: 24px 40px;
+  margin: 40px auto;
+  max-width: 1100px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.urgent-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.urgent-label {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.urgent-content p {
+  font-size: 1.25rem;
+  margin: 0;
+  flex: 1;
+}
+
+/* Actions */
+.actions-section {
+  padding: 80px 20px;
+  background: white;
+  text-align: center;
+}
+
+.actions-section h2 {
+  font-size: 2.8rem;
+  margin-bottom: 60px;
+  color: #333;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.action-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.action-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.icon {
+  font-size: 4.5rem;
+  margin-bottom: 24px;
+  color: #d32f2f;
+}
+
+.action-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+.action-card p {
+  color: #555;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+  background: #222;
+  color: #aaa;
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: auto;
+}
+
+.footer p {
+  margin-bottom: 16px;
+}
+
+.footer-links a {
+  color: #ccc;
+  margin: 0 16px;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 80px 16px 60px;
+  }
+
+  .logo {
+    font-size: 2.6rem;
+  }
+
+  .hero-stats {
+    gap: 40px;
+  }
+
+  .stat-number {
+    font-size: 2.8rem;
+  }
+
+  .urgent-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}</style><style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/styles/Login.css">.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(120deg, #89f7fe, #66a6ff);
+}
+
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.login-card input {
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.login-card button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #66a6ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.switch-link {
+  margin-top: 15px;
+  text-align: center;
+  color: #66a6ff;
+  cursor: pointer;
+}
+
+
+
+@media (max-width: 768px) {
+  .login-card {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .login-card input,
+  .login-card button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .switch-link {
+    font-size: 14px;
+  }
+}</style><style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/styles/Register.css">.register-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(120deg, #ff9a9e, #fad0c4);
+}
+
+.register-card {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.register-card input,
+.register-card select {
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.register-card button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #fa405f;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+
+@media (max-width: 768px) {
+  .register-card {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .register-card input,
+  .register-card select,
+  .register-card button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}</style><style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/styles/Homepage.css">@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f7fafc;
+    color: #1a202c;
+}
+
+/* Header styles */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 3rem;
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Blood drop shapes in header background */
+
+.header::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    width: 60px;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform: rotate(15deg);
+    box-shadow:
+        100px 30px rgba(255, 255, 255, 0.10),
+        180px 80px rgba(255, 255, 255, 0.08),
+        240px 20px rgba(255, 255, 255, 0.06),
+        320px 60px rgba(255, 255, 255, 0.09),
+        400px 40px rgba(255, 255, 255, 0.07);
+    pointer-events: none;
+    filter: blur(2px);
+    z-index: 0;
+}
+
+.header::after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    right: 80px;
+    width: 50px;
+    height: 75px;
+    background: rgba(255, 255, 255, 0.10);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform: rotate(-20deg);
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Left and right header content */
+
+.header-left,
+.header-right {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* Header title styling */
+
+.header-left h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    user-select: none;
+}
+
+/* Header subtitle */
+
+.header-left p {
+    margin-top: 0.25rem;
+    font-size: 1.125rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+/* Buttons container */
+
+.header-right {
+    gap: 1.5rem;
+}
+
+/* Donate & Find donor buttons */
+
+.button-donate {
+    background-color: white;
+    color: #b71c1c;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.125rem;
+    box-shadow: 0 4px 8px rgb(183 28 28 / 0.3);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+}
+
+.button-donate:hover {
+    background-color: #b71c1c;
+    color: white;
+}
+
+.button-find-donor {
+    background: transparent;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    border: 2px solid white;
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+}
+
+.button-find-donor:hover {
+    background-color: white;
+    color: #b71c1c;
+}
+
+/* Profile icon container */
+
+.profile-icon {
+    width: 48px;
+    height: 48px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2rem;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.profile-icon:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.3);
+}
+
+/* Profile icon SVG */
+
+.profile-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: #b71c1c;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Main content container */
+
+.main-container {
+    display: flex;
+    min-height: calc(100vh - 140px);
+}
+
+/* Left sidebar */
+
+.sidebar {
+    width: 280px;
+    background-color: white;
+    border-right: 1px solid #f0f0f0;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+}
+
+/* Sidebar quick actions */
+
+.sidebar h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+    color: #2d3748;
+}
+
+.logout-btn {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    color: white;
+    font-weight: 600;
+    border: none;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgb(183 28 28 / 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #b71c1c;
+}
+
+/* Stats card */
+
+.stats-card {
+    background-color: #fff0f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    margin-top: 2rem;
+    box-shadow: inset 0 0 10px rgb(183 28 28 / 0.1);
+}
+
+.stats-card h3 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #7b2c2c;
+}
+
+.stats-card div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-weight: 400;
+    color: #6b4a4a;
+}
+
+.stats-card div span:last-child {
+    font-weight: 700;
+    color: #b71c1c;
+}
+
+/* Emergency alert box */
+
+.emergency-alert {
+    background-color: #fbeaea;
+    border: 1px solid #f0a6a6;
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    margin-top: 2rem;
+    color: #b71c1c;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.emergency-alert .pulse-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #b71c1c;
+    border-radius: 50%;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    margin-top: 6px;
+}
+
+/* Pulse animation */
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Main content area */
+
+.main-content {
+    flex-grow: 1;
+    padding: 3rem 3rem 4rem;
+    background-color: #f9fafb;
+    overflow-y: auto;
+}
+
+/* Action bar */
+
+.action-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Blood group filter */
+
+.blood-filter select {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    border: 2px solid #f9a8a8;
+    background-color: white;
+    color: #b71c1c;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    min-width: 170px;
+}
+
+.blood-filter select:hover,
+.blood-filter select:focus {
+    border-color: #b71c1c;
+    outline: none;
+}
+
+/* Buttons next to filter */
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-donate,
+.btn-find-donor,
+.btn-chat {
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-size: 1.125rem;
+    box-shadow: 0 4px 10px rgb(183 28 28 / 0.25);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+}
+
+.btn-donate {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    color: white;
+}
+
+.btn-donate:hover {
+    background: linear-gradient(135deg, #b71c1c, #8b0000);
+    box-shadow: 0 6px 14px rgb(139 0 0 / 0.5);
+}
+
+.btn-find-donor {
+    background-color: white;
+    color: #b71c1c;
+    border: 2px solid #b71c1c;
+}
+
+.btn-find-donor:hover {
+    background-color: #b71c1c;
+    color: white;
+}
+
+.btn-chat {
+    background: linear-gradient(135deg, #b71c1c, #d32f2f);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 9999px;
+    font-size: 1.25rem;
+    box-shadow: 0 6px 14px rgb(183 28 28 / 0.45);
+    transition: transform 0.3s ease;
+}
+
+.btn-chat:hover {
+    transform: scale(1.15);
+    box-shadow: 0 10px 20px rgb(183 28 28 / 0.7);
+}
+
+/* Donors header */
+
+.donors-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #2d3748;
+}
+
+.donor-count {
+    font-weight: 400;
+    color: #4a5568;
+    margin-bottom: 2rem;
+}
+
+/* Donors grid */
+
+.donors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+/* Donor card */
+
+.donor-card {
+    background-color: white;
+    padding: 1.75rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 18px rgb(0 0 0 / 0.05);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid #fbb6b6;
+}
+
+.donor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgb(183 28 28 / 0.4);
+}
+
+/* Donor info */
+
+.donor-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.donor-initials {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #fca5a5, #b91c1c);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    font-size: 1.5rem;
+    user-select: none;
+}
+
+.donor-name {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #1a202c;
+}
+
+.availability-tag {
+    margin-left: auto;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.available {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.unavailable {
+    background-color: #e2e8f0;
+    color: #718096;
+}
+
+/* Donor details */
+
+.donor-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.donor-details span {
+    font-weight: 700;
+    color: #b71c1c;
+}
+
+/* Contact button */
+
+.contact-btn {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 700;
+    color: white;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-btn:hover {
+    background: linear-gradient(135deg, #b71c1c, #8b0000);
+    box-shadow: 0 6px 14px rgb(139 0 0 / 0.5);
+}
+
+/* ===== MOBILE RESPONSIVE ADDITIONS ===== */
+
+@media screen and (max-width: 1024px) {
+    .header {
+        padding: 1.5rem 2rem;
+    }
+
+    .header-left h1 {
+        font-size: 2.5rem;
+    }
+
+    .main-content {
+        padding: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    /* Header responsive */
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .header-left h1 {
+        font-size: 2rem;
+    }
+
+    .header-left p {
+        font-size: 1rem;
+    }
+
+    .header-right {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .button-donate,
+    .button-find-donor {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .profile-icon {
+        margin-left: 0;
+    }
+
+    /* Main container responsive */
+    .main-container {
+        flex-direction: column;
+    }
+
+    /* Sidebar responsive */
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1.5rem;
+    }
+
+    .stats-card {
+        padding: 1rem 1.5rem;
+    }
+
+    /* Action bar responsive */
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .blood-filter select {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .action-buttons {
+        justify-content: center;
+    }
+
+    .btn-donate,
+    .btn-find-donor,
+    .btn-chat {
+        padding: 0.6rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    /* Header background effects responsive */
+    .header::before,
+    .header::after {
+        opacity: 0.5;
+    }
+}
+
+@media screen and (max-width: 480px) {
+
+    /* Header responsive for small phones */
+    .header {
+        padding: 1rem;
+    }
+
+    .header-left h1 {
+        font-size: 1.75rem;
+    }
+
+    .header-right {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .button-donate,
+    .button-find-donor {
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    /* Main content responsive */
+    .main-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-donate,
+    .btn-find-donor,
+    .btn-chat {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem;
+    }
+
+    /* Donors grid responsive */
+    .donors-grid {
+        gap: 1rem;
+    }
+
+    .donor-card {
+        padding: 1.25rem;
+    }
+
+    .donor-info {
+        flex-wrap: wrap;
+    }
+
+    .availability-tag {
+        margin-left: 0;
+    }
+
+    /* Stats card responsive */
+    .stats-card {
+        padding: 1rem;
+    }
+
+    .stats-card div {
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: center;
+    }
+
+    /* Emergency alert responsive */
+    .emergency-alert {
+        padding: 0.875rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Fix for very small devices */
+
+@media screen and (max-width: 360px) {
+    .donor-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .donor-initials {
+        margin: 0 auto;
+    }
+
+    .donor-details {
+        text-align: center;
+    }
+}</style><style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/styles/EligibilityChecker.css">/* ── Page container ── */
+.eligibility-page {
+  max-width: 860px;               /* slightly wider card */
+  margin: 0 auto;
+  padding: 32px 16px 80px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+  background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
+  color: white;
+  border-radius: 16px 16px 0 0;
+  margin: -32px -16px 40px -16px;
+}
+
+.hero h1 {
+  font-size: 2.1rem;
+  margin-bottom: 0.7rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 1.18rem;
+  opacity: 0.95;
+}
+
+/* ── Main content card ── */
+.content-wrapper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+  padding: 48px 40px 56px;     /* noticeably more padding on all sides */
+}
+
+/* Headings */
+.card h2 {
+  font-size: 1.9rem;
+  color: #c8102e;
+  margin: 0 0 2.2rem 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Instruction text */
+.warning,
+.hero + .content-wrapper > p:first-of-type {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: #444;
+  margin: 0 0 2.8rem 0;
+  text-align: center;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Each question block */
+.question,
+.form-grid > div,
+.full-width {
+  margin-bottom: 2.6rem;          /* ← increased vertical space between questions */
+}
+
+.question-label,
+.input-label {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.9rem;
+  display: block;
+}
+
+/* Yes/No radio group */
+.custom-radio {
+  display: flex;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.radio-box {
+  min-width: 100px;
+  padding: 13px 28px;
+  font-size: 1.12rem;
+  font-weight: 600;
+  border: 2px solid #c8102e;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  background: white;
+  color: #c8102e;
+  text-align: center;
+}
+
+.radio-box:hover {
+  background: #fff5f5;
+}
+
+.radio-box.selected {
+  background: #c8102e;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.18);
+}
+
+/* Form inputs & selects */
+.large-input,
+.large-select {
+  font-size: 1.08rem;
+  padding: 13px 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.large-input:focus,
+.large-select:focus {
+  border-color: #c8102e;
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.12);
+  outline: none;
+}
+
+/* Button */
+.btn.primary {
+  font-size: 1.14rem;
+  padding: 15px 48px;
+  min-width: 220px;
+  background: #c8102e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: block;
+  margin: 3rem auto 1rem;       /* centered + good top/bottom space */
+}
+
+.btn.primary:hover {
+  background: #a00d24;
+}
+
+.btn.secondary {
+  background: #555;
+}
+
+.btn.secondary:hover {
+  background: #444;
+}
+
+/* Location section */
+.location-section {
+  margin: 3rem 0 2.5rem;
+}
+
+.location-section h3 {
+  font-size: 1.35rem;
+  margin-bottom: 1.4rem;
+  color: #333;
+}
+
+/* Footer note */
+.footer-note {
+  text-align: center;
+  color: #666;
+  font-size: 0.97rem;
+  margin-top: 4rem;
+  line-height: 1.6;
+}
+
+/* ── Mobile adjustments ── */
+@media (max-width: 680px) {
+  .content-wrapper {
+    padding: 36px 24px 48px;
+  }
+
+  .hero {
+    padding: 40px 20px 32px;
+    margin: -32px -16px 32px -16px;
+  }
+
+  .custom-radio {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .radio-box {
+    width: 100%;
+  }
+
+  .btn.primary {
+    width: 100%;
+    padding: 15px 24px;
+  }
+}</style><style type="text/css" data-vite-dev-id="E:/Donor_Link/Donor_Link/src/styles/FindDonor.css">.find-container {
+    padding: 80px 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header */
+
+.find-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.find-header h1 {
+    font-size: 2.8rem;
+    color: #d32f2f;
+    margin-bottom: 10px;
+}
+
+.find-header p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Search Box */
+
+.search-box {
+    max-width: 900px;
+    margin: 0 auto 50px auto;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-box select,
+.search-box input {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.search-btn {
+    padding: 12px 24px;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.search-btn:hover {
+    background: #b71c1c;
+}
+
+/* Donor Grid */
+
+.donor-grid {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+/* Donor Card */
+
+.donor-card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transition: 0.3s;
+}
+
+.donor-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Blood group circle */
+
+.blood {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    border-radius: 50%;
+    background: #d32f2f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.donor-card h3 {
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.donor-card p {
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Button */
+
+.contact-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    background: #d32f2f;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.contact-btn:hover {
+    background: #b71c1c;
+}</style></head>
+  <body>
+    <div id="root"><header class="header"><div class="header-left"><div><h1>Donor Link</h1><p>Connecting Lives. Saving Futures.</p></div></div><div class="header-right"><div class="profile-icon" title="User Profile"><svg viewBox="0 0 24 24" fill="none" stroke="#b71c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path></svg></div></div></header><div class="main-container"><aside class="sidebar"><h2>Quick Actions</h2><button class="logout-btn">Logout<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></button><div class="stats-card"><h3>Platform Impact</h3><div><span>Active Donors</span> <span>1,847</span></div><div><span>Lives Saved</span> <span>5,392</span></div></div><div class="emergency-alert"><div class="pulse-dot"></div>Emergency Alert: Blood group O- urgently needed in Dhaka.</div></aside><main class="main-content"><div class="action-bar">s<div class="blood-filter"><select><option value="All">All</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select></div><div class="action-buttons"><a class="btn-donate" href="http://localhost:5173/eligibility">Donate Blood</a><button class="btn-donate">Donate Blood</button><button class="btn-chat" title="Live Chat"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button></div></div><h2 class="donors-header">Available Donors</h2><p class="donor-count">8 donor(s) found</p><div class="donors-grid"><div class="donor-card"><div class="donor-info"><div class="donor-initials">FR</div><div class="donor-name">Fatima Rahman</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>A+</span></div><div><strong>Location:</strong> <span>Dhaka</span></div><div><strong>Last Donation:</strong> <span>2 weeks ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">RA</div><div class="donor-name">Rafiq Ahmed</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>O-</span></div><div><strong>Location:</strong> <span>Chittagong</span></div><div><strong>Last Donation:</strong> <span>1 month ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">NH</div><div class="donor-name">Nadia Hossain</div><div class="availability-tag unavailable">Unavailable</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>B+</span></div><div><strong>Location:</strong> <span>Sylhet</span></div><div><strong>Last Donation:</strong> <span>3 weeks ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">KU</div><div class="donor-name">Kamal Uddin</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>AB+</span></div><div><strong>Location:</strong> <span>Rajshahi</span></div><div><strong>Last Donation:</strong> <span>1 week ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">AB</div><div class="donor-name">Ayesha Begum</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>A-</span></div><div><strong>Location:</strong> <span>Khulna</span></div><div><strong>Last Donation:</strong> <span>2 months ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">SK</div><div class="donor-name">Shakib Khan</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>O+</span></div><div><strong>Location:</strong> <span>Dhaka</span></div><div><strong>Last Donation:</strong> <span>5 days ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">TA</div><div class="donor-name">Tahmina Akter</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>B-</span></div><div><strong>Location:</strong> <span>Comilla</span></div><div><strong>Last Donation:</strong> <span>1 week ago</span></div></div><button class="contact-btn">Contact</button></div><div class="donor-card"><div class="donor-info"><div class="donor-initials">IH</div><div class="donor-name">Imran Hasan</div><div class="availability-tag available">Available</div></div><div class="donor-details"><div><strong>Blood Group:</strong> <span>AB-</span></div><div><strong>Location:</strong> <span>Barisal</span></div><div><strong>Last Donation:</strong> <span>3 weeks ago</span></div></div><button class="contact-btn">Contact</button></div></div></main></div></div>
+    <script type="module" src="./donorlink_files/main.jsx"></script>
+  
+
+</body></html>

@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/EligibilityChecker.css';
 
-// ── Deal Breakers (permanent disqualification) ──
+// ── Storage Keys ──
+const FORM_KEY = 'blood-donor-eligibility-form';
+const SUBMITTED_KEY = 'blood-donor-eligibility-submitted';
+
+// ── Deal Breakers (Permanent Disqualifiers) ──
 const dealBreakers = [
   { id: 'hiv-aids', label: 'Have you ever tested positive for HIV/AIDS?' },
   { id: 'etretinate', label: 'Have you EVER taken Tegison® (etretinate) at any time?' },
@@ -12,18 +16,44 @@ const dealBreakers = [
   { id: 'dura-mater', label: 'Ever had a dura mater (brain covering) transplant?' },
 ];
 
-// Divisions, districts, cities remain the same (omitted here for brevity)
+// ── Location Data ──
+const divisions = [
+  'Barishal', 'Chattogram', 'Dhaka', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet'
+];
+
+const districtsByDivision = {
+  Barishal: ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+  Chattogram: ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', "Cox's Bazar", 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+  Dhaka: ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+  Khulna: ['Bagerhat', 'Chuadanga', 'Jashore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+  Mymensingh: ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
+  Rajshahi: ['Bogura', 'Joypurhat', 'Naogaon', 'Natore', 'Chapainawabganj', 'Pabna', 'Rajshahi', 'Sirajganj'],
+  Rangpur: ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+  Sylhet: ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+};
+
+const citiesByDistrict = {
+  Dhaka: ['Dhaka City North', 'Dhaka City South', 'Savar', 'Keraniganj', 'Narayanganj', 'Gazipur City', 'Other'],
+  Chattogram: ['Chattogram City', "Cox's Bazar", 'Comilla City', 'Other'],
+};
 
 function EligibilityChecker() {
   const navigate = useNavigate();
+
+  // ── Submitted State (one-time form) ──
+  const [isSubmitted, setIsSubmitted] = useState(() => {
+    return localStorage.getItem(SUBMITTED_KEY) === 'true';
+  });
+
+  // ── Form States ──
   const [step, setStep] = useState(1);
   const [permanentDisqual, setPermanentDisqual] = useState(false);
   const [basicEligible, setBasicEligible] = useState(false);
 
-  // Step 1 answers
+  // Step 1
   const [step1Answers, setStep1Answers] = useState({});
 
-  // Step 2 answers
+  // Step 2
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [lastDonation, setLastDonation] = useState('never');
@@ -35,18 +65,74 @@ function EligibilityChecker() {
   const [district, setDistrict] = useState('');
   const [cityArea, setCityArea] = useState('');
 
+  // ── Load saved form data on mount ──
+  useEffect(() => {
+    const saved = localStorage.getItem(FORM_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setStep(data.step || 1);
+        setPermanentDisqual(data.permanentDisqual || false);
+        setBasicEligible(data.basicEligible || false);
+        setStep1Answers(data.step1Answers || {});
+        setAge(data.age || '');
+        setWeight(data.weight || '');
+        setLastDonation(data.lastDonation || 'never');
+        setFeelingWell(data.feelingWell ?? null);
+        setPregnantOrRecentBirth(data.pregnantOrRecentBirth ?? null);
+        setDivision(data.division || '');
+        setDistrict(data.district || '');
+        setCityArea(data.cityArea || '');
+      } catch (err) {
+        console.warn('Failed to load saved eligibility form', err);
+      }
+    }
+  }, []);
+
+  // ── Save form data whenever relevant state changes ──
+  useEffect(() => {
+    if (isSubmitted) return; // no need to keep saving after final submission
+
+    const data = {
+      step,
+      permanentDisqual,
+      basicEligible,
+      step1Answers,
+      age,
+      weight,
+      lastDonation,
+      feelingWell,
+      pregnantOrRecentBirth,
+      division,
+      district,
+      cityArea,
+    };
+
+    localStorage.setItem(FORM_KEY, JSON.stringify(data));
+  }, [
+    step, permanentDisqual, basicEligible, step1Answers,
+    age, weight, lastDonation, feelingWell, pregnantOrRecentBirth,
+    division, district, cityArea, isSubmitted
+  ]);
+
+  // ── Helpers ──
+  const markAsSubmitted = () => {
+    localStorage.setItem(SUBMITTED_KEY, 'true');
+    setIsSubmitted(true);
+  };
+
   const handleStep1Change = (id, value) => {
     setStep1Answers(prev => ({ ...prev, [id]: value }));
   };
 
   const step1Complete = () => {
-    const hasYes = Object.values(step1Answers).includes('yes');
+    const hasYes = Object.values(step1Answers).some(val => val === 'yes');
     setPermanentDisqual(hasYes);
     setStep(hasYes ? 3 : 2);
   };
 
   const step2Complete = () => {
-    const ageNum = parseInt(age) || 0;
+    const ageNum = parseInt(age, 10) || 0;
     const weightNum = parseFloat(weight) || 0;
 
     const eligible =
@@ -55,16 +141,58 @@ function EligibilityChecker() {
       (lastDonation === 'never' || Number(lastDonation) >= 3) &&
       feelingWell === 'yes' &&
       pregnantOrRecentBirth === 'no' &&
-      division && district;
+      !!division && !!district;
 
     setBasicEligible(eligible);
     setStep(3);
+    markAsSubmitted(); // Form is now final — cannot be changed
   };
 
   const goHome = () => navigate('/homepage');
-  const goToDonate = () => navigate('/homepage');
+  const goToDonate = () => navigate('/donate');
+
+  const resetForm = () => {
+    localStorage.removeItem(FORM_KEY);
+    localStorage.removeItem(SUBMITTED_KEY);
+    setIsSubmitted(false);
+    setStep(1);
+    setPermanentDisqual(false);
+    setBasicEligible(false);
+    setStep1Answers({});
+    setAge('');
+    setWeight('');
+    setLastDonation('never');
+    setFeelingWell(null);
+    setPregnantOrRecentBirth(null);
+    setDivision('');
+    setDistrict('');
+    setCityArea('');
+  };
 
   const allStep1Answered = dealBreakers.every(q => step1Answers[q.id] !== undefined);
+
+  // ── Render ──
+  if (isSubmitted) {
+    return (
+      <div className="eligibility-page">
+        <div className="hero">
+          <h1>Thank You</h1>
+          <p>You have already completed the blood donor eligibility check.</p>
+        </div>
+
+        <div className="content-wrapper" style={{ textAlign: 'center', padding: '60px 20px' }}>
+          <p>This form can only be submitted once.</p>
+          <button className="btn primary large" onClick={goHome}>
+            Go to Home Page
+          </button>
+          {/* Optional: allow admin/debug reset */}
+          {/* <button onClick={resetForm} style={{ marginTop: '2rem', color: '#666' }}>
+            Reset form (for testing)
+          </button> */}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="eligibility-page">
@@ -80,7 +208,7 @@ function EligibilityChecker() {
             <p className="warning">
               If you answer <strong>YES</strong> to any question below, you cannot donate blood.
             </p>
-            <p></p>
+
             {dealBreakers.map(q => (
               <div key={q.id} className="question">
                 <div className="question-label">{q.label}</div>
@@ -129,11 +257,10 @@ function EligibilityChecker() {
                 <label className="input-label">Your age (years)</label>
                 <input
                   type="number"
-                  min="16"
+                  min="17"
                   value={age}
                   onChange={e => setAge(e.target.value)}
                   className="large-input"
-                  required
                 />
               </div>
 
@@ -143,11 +270,10 @@ function EligibilityChecker() {
                 <input
                   type="number"
                   step="0.5"
-                  min="40"
+                  min="45"
                   value={weight}
                   onChange={e => setWeight(e.target.value)}
                   className="large-input"
-                  required
                 />
               </div>
 
@@ -222,11 +348,63 @@ function EligibilityChecker() {
                 </div>
               </div>
 
-              {/* Location fields remain the same, just bigger labels */}
+              {/* Location */}
               <div className="full-width location-section">
                 <h3>Your Location</h3>
-                {/* ... division, district, city/area selects ... */}
-                {/* (keeping the same structure, just make sure selects have class large-select) */}
+                <div className="select-row">
+                  <div>
+                    <label className="input-label">Division</label>
+                    <select
+                      value={division}
+                      onChange={e => {
+                        setDivision(e.target.value);
+                        setDistrict('');
+                        setCityArea('');
+                      }}
+                      className="large-select"
+                    >
+                      <option value="">Select Division</option>
+                      {divisions.map(div => (
+                        <option key={div} value={div}>{div}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {division && (
+                    <div>
+                      <label className="input-label">District</label>
+                      <select
+                        value={district}
+                        onChange={e => {
+                          setDistrict(e.target.value);
+                          setCityArea('');
+                        }}
+                        className="large-select"
+                      >
+                        <option value="">Select District</option>
+                        {(districtsByDivision[division] || []).map(d => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {(division === 'Dhaka' || division === 'Chattogram') && district && citiesByDistrict[district] && (
+                    <div>
+                      <label className="input-label">City / Area</label>
+                      <select
+                        value={cityArea}
+                        onChange={e => setCityArea(e.target.value)}
+                        className="large-select"
+                      >
+                        <option value="">Select Area (optional)</option>
+                        {citiesByDistrict[district].map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -234,9 +412,12 @@ function EligibilityChecker() {
               className="btn primary large"
               onClick={step2Complete}
               disabled={
-                !age || !weight || feelingWell === null || pregnantOrRecentBirth === null ||
-                !division || !district ||
-                ((division === 'Dhaka' || division === 'Chattogram') && !cityArea)
+                !age.trim() ||
+                !weight.trim() ||
+                feelingWell === null ||
+                pregnantOrRecentBirth === null ||
+                !division ||
+                !district
               }
             >
               Check Eligibility
@@ -271,15 +452,9 @@ function EligibilityChecker() {
               </>
             )}
 
-            {permanentDisqual || !basicEligible ? (
-              <button className="btn secondary large" onClick={goHome}>
-                Go to Home Page
-              </button>
-            ) : (
-              <button className="btn primary large" onClick={goToDonate}>
-                Proceed to Donate
-              </button>
-            )}
+            <button className="btn secondary large" onClick={goHome}>
+              Go to Home Page
+            </button>
           </div>
         )}
       </div>
