@@ -5,7 +5,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Homepage from './pages/Homepage';
 import FindDonor from "./pages/FindDonor";
-
+import AboutUs       from './pages/AboutUs';         // adjust path if different
+import HowItWorks    from './pages/HowItWorks';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Contact       from './pages/Contact';
 function App() {
   return (
     <BrowserRouter>
@@ -15,6 +18,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/homepage" element={<Homepage />} />
         <Route path="/find-donor" element={<FindDonor />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </BrowserRouter>
   );

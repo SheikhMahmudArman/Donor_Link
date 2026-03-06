@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import '../styles/Landing.css';
 import './Login.jsx';
 import './Register.jsx';
-
+import './Contact.jsx';
 
 
 const Landing = () => {
@@ -48,7 +48,7 @@ const Landing = () => {
         <div className="urgent-content">
           <span className="urgent-label">● Urgent Request</span>
           <p>
-            O- needed urgently in Brooklyn Hospital – can you help today?
+            O- needed urgently in Kurmitola General Hospital – can you help today?
           </p>
           <Link to="/find-donor" className="btn btn-urgent">
             Find / Respond
