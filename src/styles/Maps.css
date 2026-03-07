@@ -1,0 +1,30 @@
+.map-section {
+    padding: 80px 20px;
+    text-align: center;
+    background: #fafafa;
+}
+
+.map-section h2 {
+    font-size: 32px;
+}
+
+.map-section p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.map-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    height: 420px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
