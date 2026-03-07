@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import { connect } from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.DATABASE_URL);
+    await connect(process.env.DATABASE_URL);
 
     console.log("MongoDB Atlas Connected");
   } catch (error) {
@@ -11,4 +11,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

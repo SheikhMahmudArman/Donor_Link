@@ -1,16 +1,17 @@
-const User = require("../model/user");
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
-exports.register = async (req, res) => {
+export async function register(req, res) {
   try {
 
     const { emailOrPhone, division, district, cityArea, password } = req.body;
-
+     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
       emailOrPhone,
       division,
       district,
       cityArea,
-      password
+      password:hashedPassword,
     });
 
     await user.save();
@@ -24,4 +25,4 @@ exports.register = async (req, res) => {
       message: "Server error"
     });
   }
-};
+}

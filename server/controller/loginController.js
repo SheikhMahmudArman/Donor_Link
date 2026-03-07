@@ -1,33 +1,29 @@
-import User from "../model/user.js";
-import { comparePassword } from "../utils/helpers.js";
-import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
 export const loginUser = async (req, res) => {
-  const { username, password } = req.body;
-
   try {
-    const user = await User.findOne({ username });
+    const { emailOrPhone, password } = req.body;
+
+    // Correct field according to your DB
+    const user = await User.findOne({ emailOrPhone });
 
     if (!user) {
       return res.status(400).json({ error: "User not found" });
     }
 
-    const isMatch = await comparePassword(password, user.password);
-
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: "Wrong password" });
+      return res.status(400).json({ error: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    res.status(200).json({
+      message: "Login successful",
+      user
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-    });
-
-    return res.status(200).json({ message: "Login successful" });
-  } catch (err) {
-    return res.status(500).json(err);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 };

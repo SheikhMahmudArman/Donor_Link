@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
@@ -20,34 +21,37 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // cookie allow করতে দরকার
-        body: JSON.stringify({
-          username: form.emailOrPhone,
-          password: form.password,
-        }),
-      });
+  try {
+    const response = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        emailOrPhone: form.emailOrPhone,
+        password: form.password,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.error || "Login failed");
-        return;
-      }
-
-      navigate("/homepage"); // সফল হলে homepage
-    } catch (err) {
-      setError("Something went wrong");
+    if (!response.ok) {
+      setError(data.error || "Login failed");
+      return;
     }
-  };
+
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    navigate("/homepage");
+
+  } catch (err) {
+    setError("Something went wrong");
+  }
+};
 
   return (
     <div className="login-page">
