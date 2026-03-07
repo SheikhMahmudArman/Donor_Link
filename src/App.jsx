@@ -12,6 +12,10 @@ import Profile from './pages/Profile';
 import Contact from './pages/Contact';
 import EligibilityChecker from './pages/EligibilityChecker';
 import Chat from './pages/Chat';
+import Partners from './pages/Partners';
+import Maps from './pages/Maps';
+import Testimonials from "./pages/Testimonials";
+
 function App() {
   return (
     <BrowserRouter>
@@ -28,6 +32,9 @@ function App() {
         <Route path="/eligibility" element={<EligibilityChecker />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/partners" element={<Partners />} />
+        <Route path="/maps" element={<Maps />} />
+        <Route path="/testimonial" element={< Testimonials />} />
       </Routes>
     </BrowserRouter>
   );

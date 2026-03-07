@@ -4,7 +4,9 @@ import '../styles/Landing.css';
 import './Login.jsx';
 import './Register.jsx';
 import './Contact.jsx';
-
+import Maps from './Maps';
+import Partners from './Partners';
+import Testimonials from './Testimonials';
 
 const Landing = () => {
   return (
@@ -89,17 +91,37 @@ const Landing = () => {
         </div>
       </section>
 
+
+      {/* Maps Section */}
+      <section className="maps-section">
+        <h2>Find Donors Near You</h2>
+        <Maps />
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="testimonials-section">
+        <h2>What People Say</h2>
+        <Testimonials />
+      </section>
+
+      {/* Partners Section */}
+      <section className="partners-section">
+        <h2>Our Partners</h2>
+        <Partners />
+      </section>
+
+
       {/* Footer */}
       <footer className="footer">
         <p>© {new Date().getFullYear()} Donor Link. All rights reserved.</p>
-       <div className="footer-links">
-  <Link to="/about">About Us</Link>
-  <Link to="/how-it-works">How It Works</Link>
-  <Link to="/privacy-policy">Privacy Policy</Link>
-  <Link to="/contact">Contact</Link>
-</div>
+        <div className="footer-links">
+          <Link to="/about">About Us</Link>
+          <Link to="/how-it-works">How It Works</Link>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/contact">Contact</Link>
+        </div>
       </footer>
-    </div>
+    </div >
   );
 };
 
