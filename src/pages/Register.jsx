@@ -50,7 +50,7 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
@@ -63,16 +63,34 @@ function Register() {
       return;
     }
 
-    // Save registration data to localStorage
-    localStorage.setItem('user-registration', JSON.stringify({
-      emailOrPhone: form.emailOrPhone,
-      division: form.division,
-      district: form.district,
-      cityArea: form.cityArea,
-    }));
+    // Save registration data to backend
+    try {
+    const response = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        emailOrPhone: form.emailOrPhone,
+        division: form.division,
+        district: form.district,
+        cityArea: form.cityArea,
+        password: form.password,
+      }),
+    });
 
-    alert("Registration Successful!");
-    navigate("/login");
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Registration Successful!");
+      navigate("/login");
+    } else {
+      alert(data.message || "Registration failed");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
   };
 
   return (

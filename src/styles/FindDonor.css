@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #fff5f7 0%, #ffebee 50%, #fce4ec 100%);
   padding: 60px 20px;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
   line-height: 1.6;
 }
 
@@ -15,7 +15,7 @@
   background: white;
   border-radius: 16px;
   padding: 48px 40px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 .find-donor-card h1 {
