@@ -10,6 +10,8 @@ function Login() {
     password: "",
   });
 
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -17,10 +19,34 @@ function Login() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your actual login logic here later
-    navigate("/homepage"); // redirect to homepage after successful login
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // cookie allow করতে দরকার
+        body: JSON.stringify({
+          username: form.emailOrPhone,
+          password: form.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Login failed");
+        return;
+      }
+
+      navigate("/homepage"); // সফল হলে homepage
+    } catch (err) {
+      setError("Something went wrong");
+    }
   };
 
   return (
@@ -28,7 +54,11 @@ function Login() {
       <div className="login-container">
         <form className="login-card" onSubmit={handleSubmit}>
           <h1>Welcome Back</h1>
-          <p className="subtitle">Sign in to continue connecting and saving lives</p>
+          <p className="subtitle">
+            Sign in to continue connecting and saving lives
+          </p>
+
+          {error && <p className="error-text">{error}</p>}
 
           <div className="form-group">
             <label>Email or Phone</label>
