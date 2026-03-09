@@ -9,7 +9,7 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ emailOrPhone });
 
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(400).json({ error: "User not found" });//need gmail verify
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
