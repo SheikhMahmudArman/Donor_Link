@@ -1,5 +1,5 @@
 import { setDefaultResultOrder, setServers } from 'dns';
-setDefaultResultOrder('ipv4first'); 
+setDefaultResultOrder('ipv4first');
 
 
 setServers(['8.8.8.8', '8.8.4.4']);

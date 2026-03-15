@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import '../styles/Homepage.css';
 import { Link, useNavigate } from "react-router-dom";
 import './EligibilityChecker.jsx';
 import Profile from '../pages/Profile';
 import './FindDonor.jsx';
+
 const donorsList = [
     { id: 1, name: 'Fatima Rahman', bloodGroup: 'A+', location: 'Dhaka', lastDonation: '2 weeks ago', available: true },
     { id: 2, name: 'Rafiq Ahmed', bloodGroup: 'O-', location: 'Chittagong', lastDonation: '1 month ago', available: true },
@@ -26,9 +27,9 @@ function Homepage() {
     function getInitials(name) {
         return name.split(' ').map(n => n[0]).join('');
     }
-
     function handleLogout() {
-        alert('Logout functionality - Would clear session and redirect to login');
+        localStorage.removeItem('user');
+        navigate('/', { replace: true });   // redirect to landing page
     }
 
     function handleDonate() {
@@ -42,7 +43,11 @@ function Homepage() {
     function handleContactDonor(donor) {
         alert(`Contact ${donor.name} - Would open contact form or messaging`);
     }
-
+    useEffect(() => {
+        if (!localStorage.getItem('user')) {
+            navigate('/login', { replace: true });
+        }
+    }, [navigate]);
     return (
         <>
             {/* Header */}
@@ -54,8 +59,8 @@ function Homepage() {
                     </div>
                 </div>
                 <div className="header-right">
-                    <div 
-                        className="profile-icon" 
+                    <div
+                        className="profile-icon"
                         title="View Profile"
                         onClick={() => navigate("/profile")}   // ← this line does the magic
                         style={{ cursor: 'pointer' }}          // makes it look clickable
