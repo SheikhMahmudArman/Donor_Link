@@ -30,6 +30,7 @@ function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    name: "",
     emailOrPhone: "",
     division: "",
     district: "",
@@ -40,6 +41,7 @@ function Register() {
   });
 
   const [errors, setErrors] = useState({
+    name: "",
     emailOrPhone: "",
     password: "",
     confirmPassword: "",
@@ -49,6 +51,7 @@ function Register() {
   });
 
   const [touched, setTouched] = useState({
+    name: false,
     emailOrPhone: false,
     password: false,
     confirmPassword: false,
@@ -57,10 +60,17 @@ function Register() {
     bloodGroup: false,
   });
 
+  const validateName = (value) => {
+    if (!value) return "Full name is required";
+    if (value.trim().length < 3) return "Name must be at least 3 characters";
+    if (!/^[a-zA-Z\s]+$/.test(value)) return "Name can only contain letters and spaces";
+    return "";
+  };
+
   const validateEmailOrPhone = (value) => {
     if (!value) return "Email or phone is required";
     
-    // Check if it's an email (contains @ and .com/.org/.net etc)
+    // Check if it's an email (contains @ and domain)
     const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
     // Check if it's a phone number (Bangladeshi phone number pattern)
     const phoneRegex = /^(01[3-9]\d{8})|(\+8801[3-9]\d{8})$/;
@@ -128,6 +138,9 @@ function Register() {
     // Validate on blur
     let error = "";
     switch(name) {
+      case "name":
+        error = validateName(value);
+        break;
       case "emailOrPhone":
         error = validateEmailOrPhone(value);
         break;
@@ -155,6 +168,7 @@ function Register() {
 
   const validateForm = () => {
     const newErrors = {
+      name: validateName(form.name),
       emailOrPhone: validateEmailOrPhone(form.emailOrPhone),
       password: validatePassword(form.password),
       confirmPassword: validateConfirmPassword(form.confirmPassword),
@@ -167,6 +181,7 @@ function Register() {
     
     // Mark all fields as touched
     setTouched({
+      name: true,
       emailOrPhone: true,
       password: true,
       confirmPassword: true,
@@ -203,6 +218,7 @@ function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          name: form.name,
           emailOrPhone: form.emailOrPhone,
           division: form.division,
           district: form.district,
@@ -239,6 +255,23 @@ function Register() {
         <form className="register-card" onSubmit={handleSubmit}>
           <h1>Create Account</h1>
           <p className="subtitle">Join Donor Link and help save lives</p>
+
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Enter your full name"
+              className={getFieldClass("name")}
+              required
+            />
+            {touched.name && errors.name && (
+              <div className="error-message">{errors.name}</div>
+            )}
+          </div>
 
           <div className="form-group">
             <label>Email or Phone</label>
