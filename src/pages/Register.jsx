@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Register.css";
 
-
 // ── Full Location Data ──
 const divisions = [
   'Barishal', 'Chattogram', 'Dhaka', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet'
@@ -24,6 +23,9 @@ const citiesByDistrict = {
   Chattogram: ['Chattogram City', "Cox's Bazar", 'Comilla City', 'Other'],
 };
 
+// Blood groups data
+const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
 function Register() {
   const navigate = useNavigate();
 
@@ -34,7 +36,70 @@ function Register() {
     cityArea: "",
     password: "",
     confirmPassword: "",
+    bloodGroup: "",
   });
+
+  const [errors, setErrors] = useState({
+    emailOrPhone: "",
+    password: "",
+    confirmPassword: "",
+    division: "",
+    district: "",
+    bloodGroup: "",
+  });
+
+  const [touched, setTouched] = useState({
+    emailOrPhone: false,
+    password: false,
+    confirmPassword: false,
+    division: false,
+    district: false,
+    bloodGroup: false,
+  });
+
+  const validateEmailOrPhone = (value) => {
+    if (!value) return "Email or phone is required";
+    
+    // Check if it's an email (contains @ and .com/.org/.net etc)
+    const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+    // Check if it's a phone number (Bangladeshi phone number pattern)
+    const phoneRegex = /^(01[3-9]\d{8})|(\+8801[3-9]\d{8})$/;
+    
+    if (emailRegex.test(value)) {
+      return ""; // Valid email
+    } else if (phoneRegex.test(value)) {
+      return ""; // Valid phone
+    } else {
+      return "Please enter a valid email (e.g., name@example.com) or valid phone number (e.g., 017XXXXXXXX)";
+    }
+  };
+
+  const validatePassword = (value) => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters";
+    return "";
+  };
+
+  const validateConfirmPassword = (value) => {
+    if (!value) return "Please confirm your password";
+    if (value !== form.password) return "Passwords do not match";
+    return "";
+  };
+
+  const validateDivision = (value) => {
+    if (!value) return "Please select a division";
+    return "";
+  };
+
+  const validateDistrict = (value) => {
+    if (!value) return "Please select a district";
+    return "";
+  };
+
+  const validateBloodGroup = (value) => {
+    if (!value) return "Please select your blood group";
+    return "";
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,49 +114,123 @@ function Register() {
       }
       return newForm;
     });
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    
+    // Validate on blur
+    let error = "";
+    switch(name) {
+      case "emailOrPhone":
+        error = validateEmailOrPhone(value);
+        break;
+      case "password":
+        error = validatePassword(value);
+        break;
+      case "confirmPassword":
+        error = validateConfirmPassword(value);
+        break;
+      case "division":
+        error = validateDivision(value);
+        break;
+      case "district":
+        error = validateDistrict(value);
+        break;
+      case "bloodGroup":
+        error = validateBloodGroup(value);
+        break;
+      default:
+        break;
+    }
+    
+    setErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      emailOrPhone: validateEmailOrPhone(form.emailOrPhone),
+      password: validatePassword(form.password),
+      confirmPassword: validateConfirmPassword(form.confirmPassword),
+      division: validateDivision(form.division),
+      district: validateDistrict(form.district),
+      bloodGroup: validateBloodGroup(form.bloodGroup),
+    };
+    
+    setErrors(newErrors);
+    
+    // Mark all fields as touched
+    setTouched({
+      emailOrPhone: true,
+      password: true,
+      confirmPassword: true,
+      division: true,
+      district: true,
+      bloodGroup: true,
+    });
+    
+    // Check if there are any errors
+    return !Object.values(newErrors).some(error => error !== "");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    if (!form.division || !form.district) {
-      alert("Please select Division and District.");
+    if (!validateForm()) {
+      // Scroll to first error field
+      const firstErrorField = Object.keys(errors).find(key => errors[key]);
+      if (firstErrorField) {
+        const element = document.querySelector(`[name="${firstErrorField}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }
       return;
     }
 
     // Save registration data to backend
     try {
-    const response = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        emailOrPhone: form.emailOrPhone,
-        division: form.division,
-        district: form.district,
-        cityArea: form.cityArea,
-        password: form.password,
-      }),
-    });
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailOrPhone: form.emailOrPhone,
+          division: form.division,
+          district: form.district,
+          cityArea: form.cityArea,
+          password: form.password,
+          bloodGroup: form.bloodGroup,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      alert("Registration Successful!");
-      navigate("/login");
-    } else {
-      alert(data.message || "Registration failed");
+      if (response.ok) {
+        alert("Registration Successful!");
+        navigate("/login");
+      } else {
+        alert(data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Server error");
-  }
+  };
+
+  const getFieldClass = (fieldName) => {
+    if (touched[fieldName] && errors[fieldName]) {
+      return "error";
+    }
+    return "";
   };
 
   return (
@@ -108,30 +247,75 @@ function Register() {
               name="emailOrPhone"
               value={form.emailOrPhone}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Enter your email or phone number"
+              className={getFieldClass("emailOrPhone")}
               required
             />
+            {touched.emailOrPhone && errors.emailOrPhone && (
+              <div className="error-message">{errors.emailOrPhone}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label>Blood Group</label>
+            <select 
+              name="bloodGroup" 
+              value={form.bloodGroup} 
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={getFieldClass("bloodGroup")}
+              required
+            >
+              <option value="">Select Blood Group</option>
+              {bloodGroups.map(bg => (
+                <option key={bg} value={bg}>{bg}</option>
+              ))}
+            </select>
+            {touched.bloodGroup && errors.bloodGroup && (
+              <div className="error-message">{errors.bloodGroup}</div>
+            )}
           </div>
 
           <div className="form-group">
             <label>Division</label>
-            <select name="division" value={form.division} onChange={handleChange} required>
+            <select 
+              name="division" 
+              value={form.division} 
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={getFieldClass("division")}
+              required
+            >
               <option value="">Select Division</option>
               {divisions.map(div => (
                 <option key={div} value={div}>{div}</option>
               ))}
             </select>
+            {touched.division && errors.division && (
+              <div className="error-message">{errors.division}</div>
+            )}
           </div>
 
           {form.division && (
             <div className="form-group">
               <label>District</label>
-              <select name="district" value={form.district} onChange={handleChange} required>
+              <select 
+                name="district" 
+                value={form.district} 
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={getFieldClass("district")}
+                required
+              >
                 <option value="">Select District</option>
                 {(districtsByDivision[form.division] || []).map(d => (
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
+              {touched.district && errors.district && (
+                <div className="error-message">{errors.district}</div>
+              )}
             </div>
           )}
 
@@ -156,9 +340,14 @@ function Register() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Create a strong password"
+              onBlur={handleBlur}
+              placeholder="Create a strong password (min. 6 characters)"
+              className={getFieldClass("password")}
               required
             />
+            {touched.password && errors.password && (
+              <div className="error-message">{errors.password}</div>
+            )}
           </div>
 
           <div className="form-group">
@@ -168,9 +357,14 @@ function Register() {
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Confirm your password"
+              className={getFieldClass("confirmPassword")}
               required
             />
+            {touched.confirmPassword && errors.confirmPassword && (
+              <div className="error-message">{errors.confirmPassword}</div>
+            )}
           </div>
 
           <button type="submit" className="register-btn">Register</button>
