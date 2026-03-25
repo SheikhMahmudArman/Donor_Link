@@ -20,7 +20,11 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  bloodGroup: {
+    type: String,
+    required: true
+  },
 });
 
 export default model("User", userSchema);

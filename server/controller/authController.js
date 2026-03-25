@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 export async function register(req, res) {
   try {
 
-    const { emailOrPhone, division, district, cityArea, password } = req.body;
+    const { emailOrPhone, division, district, cityArea, password, bloodGroup } = req.body;
      const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
       emailOrPhone,
@@ -12,6 +12,7 @@ export async function register(req, res) {
       district,
       cityArea,
       password:hashedPassword,
+      bloodGroup,
     });
 
     await user.save();
