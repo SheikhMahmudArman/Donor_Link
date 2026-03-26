@@ -25,7 +25,6 @@ const citiesByDistrict = {
 
 function Profile() {
   const navigate = useNavigate();
-
   const [userData, setUserData] = useState({
     emailOrPhone: '',
     division: '',
@@ -42,33 +41,61 @@ function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [previewPic, setPreviewPic] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem('token');
 
+  // ── Fetch user profile from backend
   useEffect(() => {
-    // Load registration data (email/phone, location)
-    const savedReg = localStorage.getItem('user-registration');
-    if (savedReg) {
-      try {
-        const regData = JSON.parse(savedReg);
-        setUserData(prev => ({ ...prev, ...regData }));
-      } catch {}
-    }
+  if (!token) {
+    navigate('/login');
+    return;
+  }
 
-    // Load eligibility data
-    const savedElig = localStorage.getItem('blood-donor-eligibility-form');
-    if (savedElig) {
-      try {
-        const elig = JSON.parse(savedElig);
-        const now = new Date().toLocaleString();
-        setUserData(prev => ({
-          ...prev,
-          permanentDisqual: elig.permanentDisqual || false,
-          basicEligible: elig.basicEligible || false,
-          isEligible: !elig.permanentDisqual && elig.basicEligible,
-          lastCheckDate: now,
-        }));
-      } catch {}
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/user/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+      console.log('Fetched user:', data); // Debug
+
+      if (!response.ok) {
+        alert(data.error || 'Failed to fetch profile');
+        setLoading(false);
+        return;
+      }
+
+      // Use nullish coalescing to avoid undefined
+      const user = data.user ?? data ?? {};
+      const now = new Date().toLocaleString();
+
+      setUserData(prev => ({
+        ...prev,
+        emailOrPhone: user.emailOrPhone ?? prev.emailOrPhone,
+        fullName: user.fullName ?? prev.fullName,
+        division: user.division ?? prev.division,
+        district: user.district ?? prev.district,
+        cityArea: user.cityArea ?? prev.cityArea,
+        bloodGroup: user.bloodGroup ?? prev.bloodGroup,
+        profilePic: user.profilePic ?? prev.profilePic,
+        permanentDisqual: user.permanentDisqual ?? false,
+        basicEligible: user.basicEligible ?? false,
+        isEligible: !(user.permanentDisqual ?? false) && (user.basicEligible ?? false),
+        lastCheckDate: now
+      }));
+
+      setLoading(false);
+
+    } catch (err) {
+      console.error(err);
+      alert('Error fetching profile');
+      setLoading(false);
     }
-  }, []);
+  };
+
+  fetchProfile();
+}, [token, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -97,25 +124,54 @@ function Profile() {
     }
   };
 
-  const handleSave = () => {
-    localStorage.setItem('user-registration', JSON.stringify({
+  // ── Save changes to backend
+  const handleSave = async () => {
+  try {
+    // Only send relevant fields
+    const updateData = {
+      fullName: userData.fullName,
       emailOrPhone: userData.emailOrPhone,
       division: userData.division,
       district: userData.district,
       cityArea: userData.cityArea,
-      fullName: userData.fullName,
       bloodGroup: userData.bloodGroup,
       profilePic: userData.profilePic,
-    }));
+    };
+
+    const response = await fetch('http://localhost:5000/api/user/update', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(updateData)
+    });
+
+    const data = await response.json();
+    console.log('Update response:', data); // Debug
+
+    if (!response.ok) {
+      alert(data.error || 'Failed to update profile');
+      return;
+    }
+
+    setUserData(prev => ({ ...prev, ...data.user ?? data ?? {} }));
+    setPreviewPic(null);
     setIsEditing(false);
-    alert('Profile updated!');
-  };
+    alert('Profile updated successfully!');
+  } catch (err) {
+    console.error(err);
+    alert('Error updating profile');
+  }
+};
 
   const getEligibilityBadge = () => {
-    if (userData.permanentDisqual) return <span className="badge permanent">Permanently Deferred</span>;
-    if (userData.isEligible) return <span className="badge eligible">Eligible</span>;
+    if (userData?.permanentDisqual) return <span className="badge permanent">Permanently Deferred</span>;
+    if (userData?.isEligible) return <span className="badge eligible">Eligible</span>;
     return <span className="badge temporary">Currently Not Eligible</span>;
   };
+
+  if (loading) return <p>Loading profile...</p>;
 
   return (
     <div className="profile-page">
