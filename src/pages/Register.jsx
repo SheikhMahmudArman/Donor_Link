@@ -30,7 +30,7 @@ function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
+    userName: "",
     emailOrPhone: "",
     division: "",
     district: "",
@@ -41,7 +41,7 @@ function Register() {
   });
 
   const [errors, setErrors] = useState({
-    name: "",
+    userName: "",
     emailOrPhone: "",
     password: "",
     confirmPassword: "",
@@ -51,7 +51,7 @@ function Register() {
   });
 
   const [touched, setTouched] = useState({
-    name: false,
+    userName: false,
     emailOrPhone: false,
     password: false,
     confirmPassword: false,
@@ -138,7 +138,7 @@ function Register() {
     // Validate on blur
     let error = "";
     switch(name) {
-      case "name":
+      case "userName":
         error = validateName(value);
         break;
       case "emailOrPhone":
@@ -168,7 +168,7 @@ function Register() {
 
   const validateForm = () => {
     const newErrors = {
-      name: validateName(form.name),
+      userName: validateName(form.userName),
       emailOrPhone: validateEmailOrPhone(form.emailOrPhone),
       password: validatePassword(form.password),
       confirmPassword: validateConfirmPassword(form.confirmPassword),
@@ -181,7 +181,7 @@ function Register() {
     
     // Mark all fields as touched
     setTouched({
-      name: true,
+      userName: true,
       emailOrPhone: true,
       password: true,
       confirmPassword: true,
@@ -218,7 +218,7 @@ function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: form.name,
+          userName: form.userName,
           emailOrPhone: form.emailOrPhone,
           division: form.division,
           district: form.district,
@@ -260,16 +260,16 @@ function Register() {
             <label>Full Name</label>
             <input
               type="text"
-              name="name"
-              value={form.name}
+              name="userName"
+              value={form.userName}
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Enter your full name"
-              className={getFieldClass("name")}
+              className={getFieldClass("userName")}
               required
             />
-            {touched.name && errors.name && (
-              <div className="error-message">{errors.name}</div>
+            {touched.userName && errors.userName && (
+              <div className="error-message">{errors.userName}</div>
             )}
           </div>
 
