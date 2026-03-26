@@ -15,6 +15,8 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/donorRoutes.js";
 import authRoutesLogin from "./routes/authRoutesLogin.js";
 import userRoutes from "./routes/user.js";
+import eligibilityRoutes from "./routes/eligibilityRoutes.js"; // New import
+
 
 
 config();
@@ -34,6 +36,8 @@ app.use(json());
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", authRoutesLogin);
 app.use("/api/user", userRoutes);
+app.use("/api/eligibility", eligibilityRoutes); // New route
+
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

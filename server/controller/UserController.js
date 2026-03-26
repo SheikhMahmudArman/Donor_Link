@@ -4,7 +4,6 @@ import Profile from "../models/profileModel.js";
 // GET user profile
 export const getUserProfile = async (req, res) => {
   try {
-    // req.user already has the user document from auth middleware
     const user = req.user;
     
     // Get profile if exists
@@ -12,16 +11,21 @@ export const getUserProfile = async (req, res) => {
     
     const userData = {
       id: user._id,
-      fullName: user.fullName || user.userName || '',  // Fallback to userName if fullName empty
+      fullName: user.fullName || user.userName || '',
       emailOrPhone: user.emailOrPhone || '',
       division: user.division || '',
       district: user.district || '',
       cityArea: user.cityArea || '',
       bloodGroup: user.bloodGroup || '',
       profilePic: user.profilePic || '',
+      
+      // Eligibility data
       permanentDisqual: user.permanentDisqual || false,
-      basicEligible: user.basicEligible || true,
-      age: profile?.age || null,
+      basicEligible: user.basicEligible || false,
+      isEligible: !user.permanentDisqual && user.basicEligible,
+      eligibilityDetails: user.eligibilityDetails || {},
+      
+      age: profile?.age || user.eligibilityDetails?.age || null,
       address: profile?.address || '',
     };
 
@@ -39,7 +43,7 @@ export const updateUserProfile = async (req, res) => {
     const user = req.user;
     
     // Update user fields
-    const allowedUserFields = ['fullName', 'division', 'district', 'cityArea', 'bloodGroup', 'profilePic', 'permanentDisqual', 'basicEligible'];
+    const allowedUserFields = ['fullName', 'division', 'district', 'cityArea', 'bloodGroup', 'profilePic'];
     
     allowedUserFields.forEach(key => {
       if (updates[key] !== undefined && updates[key] !== '') {
@@ -75,7 +79,8 @@ export const updateUserProfile = async (req, res) => {
       profilePic: user.profilePic,
       permanentDisqual: user.permanentDisqual,
       basicEligible: user.basicEligible,
-      age: profile?.age || null,
+      isEligible: !user.permanentDisqual && user.basicEligible,
+      age: profile?.age || user.eligibilityDetails?.age || null,
       address: profile?.address || '',
     };
 
