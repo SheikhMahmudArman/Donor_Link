@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import Donor from "../models/Donor.js";
 
 export async function register(req, res) {
   try {
@@ -24,6 +25,20 @@ export async function register(req, res) {
     });
 
     await user.save();
+    
+    // Create donor record (initially not eligible until they complete eligibility check)
+    const donor = new Donor({
+      userId: user._id,
+      fullName: userName,
+      bloodGroup: bloodGroup,
+      division: division,
+      district: district,
+      cityArea: cityArea,
+      isEligible: false,  // Not eligible until they complete eligibility check
+      available: false
+    });
+    
+    await donor.save();
 
     res.status(201).json({
       message: "User registered successfully",

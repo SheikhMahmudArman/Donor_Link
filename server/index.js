@@ -16,8 +16,8 @@ import authRoutes from "./routes/donorRoutes.js";
 import authRoutesLogin from "./routes/authRoutesLogin.js";
 import userRoutes from "./routes/user.js";
 import eligibilityRoutes from "./routes/eligibilityRoutes.js"; // New import
-
-
+import donorRoutes from "./routes/donorRoutes.js"; // New import
+import authRoutesRegister from "./routes/authRoutesRegister.js";
 
 config();
 
@@ -33,12 +33,12 @@ app.use(cors({
 }));
 app.use(json());
 
-app.use("/api/auth", authRoutes);
+
 app.use("/api/auth", authRoutesLogin);
 app.use("/api/user", userRoutes);
 app.use("/api/eligibility", eligibilityRoutes); // New route
-
-
+app.use("/api/donors", donorRoutes); // New route for donors
+app.use("/api/auth", authRoutesRegister);
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });

@@ -1,39 +1,87 @@
 import { useState, useEffect } from "react";
 import '../styles/Homepage.css';
 import { Link, useNavigate } from "react-router-dom";
-import './EligibilityChecker.jsx';
-import Profile from '../pages/Profile';
-import './FindDonor.jsx';
-
-const donorsList = [
-    { id: 1, name: 'Fatima Rahman', bloodGroup: 'A+', location: 'Dhaka', lastDonation: '2 weeks ago', available: true },
-    { id: 2, name: 'Rafiq Ahmed', bloodGroup: 'O-', location: 'Chittagong', lastDonation: '1 month ago', available: true },
-    { id: 3, name: 'Nadia Hossain', bloodGroup: 'B+', location: 'Sylhet', lastDonation: '3 weeks ago', available: false },
-    { id: 4, name: 'Kamal Uddin', bloodGroup: 'AB+', location: 'Rajshahi', lastDonation: '1 week ago', available: true },
-    { id: 5, name: 'Ayesha Begum', bloodGroup: 'A-', location: 'Khulna', lastDonation: '2 months ago', available: true },
-    { id: 6, name: 'Shakib Khan', bloodGroup: 'O+', location: 'Dhaka', lastDonation: '5 days ago', available: true },
-    { id: 7, name: 'Tahmina Akter', bloodGroup: 'B-', location: 'Comilla', lastDonation: '1 week ago', available: true },
-    { id: 8, name: 'Imran Hasan', bloodGroup: 'AB-', location: 'Barisal', lastDonation: '3 weeks ago', available: true },
-];
 
 const bloodGroups = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 function Homepage() {
     const [selectedBloodGroup, setSelectedBloodGroup] = useState('All');
+    const [donors, setDonors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        totalDonors: 0,
+        recentDonors: 0,
+        donorsByBloodGroup: {}
+    });
     const navigate = useNavigate();
 
-    const filteredDonors = selectedBloodGroup === 'All' ? donorsList : donorsList.filter(d => d.bloodGroup === selectedBloodGroup);
+    // Fetch donors from server
+    const fetchDonors = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const url = selectedBloodGroup === 'All' 
+                ? 'http://localhost:5000/api/donors'
+                : `http://localhost:5000/api/donors?bloodGroup=${selectedBloodGroup}`;
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : ''
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                setDonors(data.donors);
+            } else {
+                console.error("Error fetching donors:", data.error);
+            }
+        } catch (error) {
+            console.error("Fetch donors error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch donor statistics
+    const fetchStats = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/donors/stats', {
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : ''
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                setStats(data.stats);
+            }
+        } catch (error) {
+            console.error("Fetch stats error:", error);
+        }
+    };
+
+    useEffect(() => {
+        // Check authentication
+        if (!localStorage.getItem('token')) {
+            navigate('/login', { replace: true });
+            return;
+        }
+        
+        fetchDonors();
+        fetchStats();
+    }, [selectedBloodGroup, navigate]);
 
     function getInitials(name) {
-        return name.split(' ').map(n => n[0]).join('');
+        return name.split(' ').map(n => n[0]).join('').toUpperCase();
     }
+    
     function handleLogout() {
         localStorage.removeItem('user');
-        navigate('/', { replace: true });   // redirect to landing page
-    }
-
-    function handleDonate() {
-        alert('Donate feature - Would redirect to donation registration form');
+        localStorage.removeItem('token');
+        navigate('/', { replace: true });
     }
 
     function handleChat() {
@@ -41,13 +89,40 @@ function Homepage() {
     }
 
     function handleContactDonor(donor) {
-        alert(`Contact ${donor.name} - Would open contact form or messaging`);
+        // This should open chat or contact form
+        alert(`Contact ${donor.fullName} - Chat feature coming soon!`);
     }
-    useEffect(() => {
-        if (!localStorage.getItem('user')) {
-            navigate('/login', { replace: true });
-        }
-    }, [navigate]);
+
+    // Format last donation date
+    function formatLastDonation(lastDonation) {
+        if (lastDonation === 'never') return 'Never donated';
+        if (lastDonation === '3') return '3+ months ago';
+        if (lastDonation === '6') return '6+ months ago';
+        return `${lastDonation} months ago`;
+    }
+
+    if (loading) {
+        return (
+            <div className="homepage-container">
+                <header className="header">
+                    <div className="header-left">
+                        <div>
+                            <h1>Donor Link</h1>
+                            <p>Connecting Lives. Saving Futures.</p>
+                        </div>
+                    </div>
+                </header>
+                <div className="main-container">
+                    <main className="main-content">
+                        <div style={{ textAlign: 'center', padding: '100px' }}>
+                            <p>Loading donors...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             {/* Header */}
@@ -62,8 +137,8 @@ function Homepage() {
                     <div
                         className="profile-icon"
                         title="View Profile"
-                        onClick={() => navigate("/profile")}   // ← this line does the magic
-                        style={{ cursor: 'pointer' }}          // makes it look clickable
+                        onClick={() => navigate("/profile")}
+                        style={{ cursor: 'pointer' }}
                     >
                         <svg viewBox="0 0 24 24" fill="none" stroke="#b71c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="7" r="4" />
@@ -89,8 +164,18 @@ function Homepage() {
 
                     <div className="stats-card">
                         <h3>Platform Impact</h3>
-                        <div><span>Active Donors</span> <span>1,847</span></div>
-                        <div><span>Lives Saved</span> <span>5,392</span></div>
+                        <div>
+                            <span>Active Donors</span> 
+                            <span>{stats.totalDonors || 0}</span>
+                        </div>
+                        <div>
+                            <span>Lives Saved</span> 
+                            <span>{Math.floor((stats.totalDonors || 0) * 2.5)}</span>
+                        </div>
+                        <div>
+                            <span>New This Month</span> 
+                            <span>{stats.recentDonors || 0}</span>
+                        </div>
                     </div>
 
                     <div className="emergency-alert">
@@ -101,7 +186,7 @@ function Homepage() {
 
                 {/* Main Content */}
                 <main className="main-content">
-                    <div className="action-bar">s
+                    <div className="action-bar">
                         <div className="blood-filter">
                             <select value={selectedBloodGroup} onChange={e => setSelectedBloodGroup(e.target.value)}>
                                 {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
@@ -123,26 +208,43 @@ function Homepage() {
                     </div>
 
                     <h2 className="donors-header">Available Donors</h2>
-                    <p className="donor-count">{filteredDonors.length} donor(s) found</p>
+                    <p className="donor-count">{donors.length} eligible donor(s) found</p>
 
                     <div className="donors-grid">
-                        {filteredDonors.map(donor => (
-                            <div key={donor.id} className="donor-card">
-                                <div className="donor-info">
-                                    <div className="donor-initials">{getInitials(donor.name)}</div>
-                                    <div className="donor-name">{donor.name}</div>
-                                    <div className={`availability-tag ${donor.available ? 'available' : 'unavailable'}`}>
-                                        {donor.available ? 'Available' : 'Unavailable'}
-                                    </div>
-                                </div>
-                                <div className="donor-details">
-                                    <div><strong>Blood Group:</strong> <span>{donor.bloodGroup}</span></div>
-                                    <div><strong>Location:</strong> <span>{donor.location}</span></div>
-                                    <div><strong>Last Donation:</strong> <span>{donor.lastDonation}</span></div>
-                                </div>
-                                <button className="contact-btn" onClick={() => handleContactDonor(donor)}>Contact</button>
+                        {donors.length === 0 ? (
+                            <div style={{ textAlign: 'center', gridColumn: '1/-1', padding: '40px' }}>
+                                <p>No eligible donors found for this blood group.</p>
                             </div>
-                        ))}
+                        ) : (
+                            donors.map(donor => (
+                                <div key={donor._id} className="donor-card">
+                                    <div className="donor-info">
+                                        <div className="donor-initials">{getInitials(donor.fullName)}</div>
+                                        <div className="donor-name">{donor.fullName}</div>
+                                        <div className={`availability-tag ${donor.available ? 'available' : 'unavailable'}`}>
+                                            {donor.available ? 'Available' : 'Unavailable'}
+                                        </div>
+                                    </div>
+                                    <div className="donor-details">
+                                        <div>
+                                            <strong>Blood Group:</strong> 
+                                            <span>{donor.bloodGroup}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Location:</strong> 
+                                            <span>{donor.district}, {donor.division}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Last Donation:</strong> 
+                                            <span>{formatLastDonation(donor.lastDonation)}</span>
+                                        </div>
+                                    </div>
+                                    <button className="contact-btn" onClick={() => handleContactDonor(donor)}>
+                                        Contact
+                                    </button>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </main>
             </div>

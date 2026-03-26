@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Donor from "../models/Donor.js";
 
 // Save eligibility check results
 export const saveEligibility = async (req, res) => {
@@ -39,11 +40,50 @@ export const saveEligibility = async (req, res) => {
     
     await user.save();
     
+    // Check if user is eligible to be a donor
+    const isEligibleToDonate = !permanentDisqual && basicEligible;
+    
+    // Update or create donor record
+    if (isEligibleToDonate) {
+      let donor = await Donor.findOne({ userId: user._id });
+      
+      if (donor) {
+        donor.isEligible = true;
+        donor.available = true;
+        donor.bloodGroup = user.bloodGroup;
+        donor.division = division || user.division;
+        donor.district = district || user.district;
+        donor.cityArea = cityArea || user.cityArea;
+        donor.lastDonation = lastDonation || 'never';
+        await donor.save();
+      } else {
+        donor = new Donor({
+          userId: user._id,
+          fullName: user.fullName || user.userName,
+          bloodGroup: user.bloodGroup,
+          division: division || user.division,
+          district: district || user.district,
+          cityArea: cityArea || user.cityArea,
+          lastDonation: lastDonation || 'never',
+          isEligible: true,
+          available: true
+        });
+        await donor.save();
+      }
+    } else {
+      // User is not eligible, mark as unavailable
+      await Donor.findOneAndUpdate(
+        { userId: user._id },
+        { isEligible: false, available: false },
+        { upsert: true }
+      );
+    }
+    
     // Prepare response data
     const eligibilityData = {
       permanentDisqual: user.permanentDisqual,
       basicEligible: user.basicEligible,
-      isEligible: !user.permanentDisqual && user.basicEligible,
+      isEligible: isEligibleToDonate,
       eligibilityDetails: user.eligibilityDetails,
       step1Answers: user.step1Answers,
       lastChecked: user.eligibilityDetails.lastChecked

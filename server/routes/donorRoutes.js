@@ -1,8 +1,20 @@
-import { Router } from "express";
-const router = Router();
+import express from "express";
+import {
+  getEligibleDonors,
+  getDonorStats,
+  updateDonorStatus,
+  getDonorById
+} from "../controller/donorController.js";
+import { verifyToken } from "../middleware/auth.js";
 
-import { register } from "../controller/authController.js";
+const router = express.Router();
 
-router.post("/register", register);
+// Public routes (no auth required for viewing donors)
+router.get("/", getEligibleDonors);
+router.get("/stats", getDonorStats);
+router.get("/:id", getDonorById);
+
+// Protected routes
+router.put("/status", verifyToken, updateDonorStatus);
 
 export default router;

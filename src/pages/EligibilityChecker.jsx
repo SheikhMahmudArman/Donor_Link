@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/EligibilityChecker.css';
-
+import { API_URL } from '../config/api.js';
 // ── Storage Keys ──
 const FORM_KEY = 'blood-donor-eligibility-form';
 
