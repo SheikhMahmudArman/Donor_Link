@@ -18,22 +18,35 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid password" });
     }
 
-    // 🔥 TOKEN CREATE
+    // Create token
     const token = jwt.sign(
-  { id: user._id ,emailOrPhone: user.emailOrPhone},
-  process.env.JWT_SECRET,
-  { expiresIn: "7d" } // 7 din valid
-);
+      { id: user._id, emailOrPhone: user.emailOrPhone },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-    // 🔥 SEND TOKEN
+    // Send user data without password
+    const userData = {
+      id: user._id,
+      fullName: user.fullName || user.userName,
+      emailOrPhone: user.emailOrPhone,
+      division: user.division,
+      district: user.district,
+      cityArea: user.cityArea,
+      bloodGroup: user.bloodGroup,
+      profilePic: user.profilePic,
+      permanentDisqual: user.permanentDisqual,
+      basicEligible: user.basicEligible
+    };
+
     res.status(200).json({
       message: "Login successful",
-      token,   // ✅ VERY IMPORTANT
-      user
+      token,
+      user: userData
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Login error:", error);
     res.status(500).json({ error: "Server error" });
   }
 };

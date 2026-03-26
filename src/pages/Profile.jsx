@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Profile.css';
 
-// ── Location Data ──
+// ── Location Data (same as before) ──
 const divisions = [
   'Barishal', 'Chattogram', 'Dhaka', 'Khulna', 'Mymensingh', 'Rajshahi', 'Rangpur', 'Sylhet'
 ];
@@ -33,69 +33,69 @@ function Profile() {
     fullName: '',
     bloodGroup: '',
     profilePic: null,
-    isEligible: false,
     permanentDisqual: false,
     basicEligible: false,
-    lastCheckDate: null,
+    age: null,
+    address: '',
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [previewPic, setPreviewPic] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const token = localStorage.getItem('token');
 
   // ── Fetch user profile from backend
   useEffect(() => {
-  if (!token) {
-    navigate('/login');
-    return;
-  }
-
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/user/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const data = await response.json();
-      console.log('Fetched user:', data); // Debug
-
-      if (!response.ok) {
-        alert(data.error || 'Failed to fetch profile');
-        setLoading(false);
-        return;
-      }
-
-      // Use nullish coalescing to avoid undefined
-      const user = data.user ?? data ?? {};
-      const now = new Date().toLocaleString();
-
-      setUserData(prev => ({
-        ...prev,
-        emailOrPhone: user.emailOrPhone ?? prev.emailOrPhone,
-        fullName: user.fullName ?? prev.fullName,
-        division: user.division ?? prev.division,
-        district: user.district ?? prev.district,
-        cityArea: user.cityArea ?? prev.cityArea,
-        bloodGroup: user.bloodGroup ?? prev.bloodGroup,
-        profilePic: user.profilePic ?? prev.profilePic,
-        permanentDisqual: user.permanentDisqual ?? false,
-        basicEligible: user.basicEligible ?? false,
-        isEligible: !(user.permanentDisqual ?? false) && (user.basicEligible ?? false),
-        lastCheckDate: now
-      }));
-
-      setLoading(false);
-
-    } catch (err) {
-      console.error(err);
-      alert('Error fetching profile');
-      setLoading(false);
+    if (!token) {
+      navigate('/login');
+      return;
     }
-  };
 
-  fetchProfile();
-}, [token, navigate]);
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/user/me', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        console.log('Fetched user data:', data);
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch profile');
+        }
+
+        // Set user data
+        if (data.user) {
+          setUserData({
+            emailOrPhone: data.user.emailOrPhone || '',
+            fullName: data.user.fullName || '',
+            division: data.user.division || '',
+            district: data.user.district || '',
+            cityArea: data.user.cityArea || '',
+            bloodGroup: data.user.bloodGroup || '',
+            profilePic: data.user.profilePic || null,
+            permanentDisqual: data.user.permanentDisqual || false,
+            basicEligible: data.user.basicEligible || false,
+            age: data.user.age || null,
+            address: data.user.address || '',
+          });
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,52 +126,79 @@ function Profile() {
 
   // ── Save changes to backend
   const handleSave = async () => {
-  try {
-    // Only send relevant fields
-    const updateData = {
-      fullName: userData.fullName,
-      emailOrPhone: userData.emailOrPhone,
-      division: userData.division,
-      district: userData.district,
-      cityArea: userData.cityArea,
-      bloodGroup: userData.bloodGroup,
-      profilePic: userData.profilePic,
-    };
+    try {
+      // Only send fields that are editable
+      const updateData = {
+        fullName: userData.fullName,
+        division: userData.division,
+        district: userData.district,
+        cityArea: userData.cityArea,
+        bloodGroup: userData.bloodGroup,
+        profilePic: userData.profilePic,
+        age: userData.age,
+        address: userData.address,
+      };
 
-    const response = await fetch('http://localhost:5000/api/user/update', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(updateData)
-    });
+      const response = await fetch('http://localhost:5000/api/user/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+      });
 
-    const data = await response.json();
-    console.log('Update response:', data); // Debug
+      const data = await response.json();
+      console.log('Update response:', data);
 
-    if (!response.ok) {
-      alert(data.error || 'Failed to update profile');
-      return;
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update profile');
+      }
+
+      // Update local state with response data
+      if (data.user) {
+        setUserData(prev => ({ ...prev, ...data.user }));
+      }
+      
+      setPreviewPic(null);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+    } catch (err) {
+      console.error('Update error:', err);
+      alert(err.message || 'Error updating profile');
     }
+  };
 
-    setUserData(prev => ({ ...prev, ...data.user ?? data ?? {} }));
-    setPreviewPic(null);
-    setIsEditing(false);
-    alert('Profile updated successfully!');
-  } catch (err) {
-    console.error(err);
-    alert('Error updating profile');
-  }
-};
+  const isEligible = !userData.permanentDisqual && userData.basicEligible;
 
   const getEligibilityBadge = () => {
-    if (userData?.permanentDisqual) return <span className="badge permanent">Permanently Deferred</span>;
-    if (userData?.isEligible) return <span className="badge eligible">Eligible</span>;
+    if (userData.permanentDisqual) 
+      return <span className="badge permanent">Permanently Deferred</span>;
+    if (isEligible) 
+      return <span className="badge eligible">Eligible to Donate</span>;
     return <span className="badge temporary">Currently Not Eligible</span>;
   };
 
-  if (loading) return <p>Loading profile...</p>;
+  if (loading) {
+    return (
+      <div className="profile-page">
+        <div className="profile-container" style={{ textAlign: 'center', padding: '60px' }}>
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="profile-page">
+        <div className="profile-container" style={{ textAlign: 'center', padding: '60px' }}>
+          <p style={{ color: 'red' }}>Error: {error}</p>
+          <button onClick={() => navigate('/login')} className="btn edit-btn">Go to Login</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
@@ -212,12 +239,12 @@ function Profile() {
           <h2>Personal Details</h2>
           <div className="info-grid">
             <div className="info-item">
-              <label>Name</label>
+              <label>Full Name</label>
               {isEditing ? (
                 <input
                   type="text"
                   name="fullName"
-                  value={userData.fullName}
+                  value={userData.fullName || ''}
                   onChange={handleChange}
                   placeholder="Your full name"
                 />
@@ -227,17 +254,8 @@ function Profile() {
             </div>
 
             <div className="info-item">
-              <label>Contact</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="emailOrPhone"
-                  value={userData.emailOrPhone}
-                  onChange={handleChange}
-                />
-              ) : (
-                <p>{userData.emailOrPhone || 'Not set'}</p>
-              )}
+              <label>Contact (Email/Phone)</label>
+              <p>{userData.emailOrPhone || 'Not set'}</p>
             </div>
 
             <div className="info-item full-width">
@@ -245,13 +263,13 @@ function Profile() {
               {isEditing ? (
                 <div className="location-edit">
                   <select name="division" value={userData.division} onChange={handleChange}>
-                    <option value="">Division</option>
+                    <option value="">Select Division</option>
                     {divisions.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
 
                   {userData.division && (
                     <select name="district" value={userData.district} onChange={handleChange}>
-                      <option value="">District</option>
+                      <option value="">Select District</option>
                       {(districtsByDivision[userData.division] || []).map(d => (
                         <option key={d} value={d}>{d}</option>
                       ))}
@@ -283,15 +301,12 @@ function Profile() {
           <h2>Blood Donation Status</h2>
           <div className="eligibility-card">
             <div className="badge-container">{getEligibilityBadge()}</div>
-            {userData.lastCheckDate && (
-              <p className="last-check">Last checked: {userData.lastCheckDate}</p>
-            )}
             {userData.permanentDisqual ? (
-              <p className="note permanent">Permanently deferred from donating.</p>
-            ) : userData.isEligible ? (
-              <p className="note success">You appear eligible — confirm at center.</p>
+              <p className="note permanent">Permanently deferred from donating blood.</p>
+            ) : isEligible ? (
+              <p className="note success">You are eligible to donate blood. Visit a donation center to confirm.</p>
             ) : (
-              <p className="note temporary">Currently not eligible — may change later.</p>
+              <p className="note temporary">You are currently not eligible to donate. You may become eligible later.</p>
             )}
             {!isEditing && (
               <button className="btn update-btn" onClick={() => navigate('/eligibility')}>
@@ -319,6 +334,13 @@ function Profile() {
             <p>{userData.bloodGroup || 'Not set'}</p>
           )}
         </section>
+
+        {userData.age !== null && (
+          <section className="profile-info">
+            <h2>Age</h2>
+            <p>{userData.age} years</p>
+          </section>
+        )}
       </div>
     </div>
   );
