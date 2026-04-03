@@ -1,9 +1,14 @@
 import express from "express";
-import { createBloodRequest } from "../controller/bloodRequestController.js";
+import bloodRequestController from "../controller/bloodRequestController.js";
+import { verifyToken } from "../middleware/auth.js";
+import updateLastActive from "../middleware/updateLastActive.js";
 
 const router = express.Router();
 
-// POST request
-router.post("/", createBloodRequest);
+// Protected routes
+router.post("/", verifyToken, updateLastActive, bloodRequestController.createBloodRequest);
+router.post("/send-request", verifyToken, updateLastActive, bloodRequestController.sendRequestToDonor);
+router.get("/pending", verifyToken, updateLastActive, bloodRequestController.getPendingRequestsForDonor);
+router.post("/accept", verifyToken, updateLastActive, bloodRequestController.acceptBloodRequest);
 
 export default router;
