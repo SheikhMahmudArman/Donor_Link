@@ -25,21 +25,37 @@ function FindDonor() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        // Basic validation
-        if (!form.guardianPhone || !form.requiredDate || !form.hospitalName || !form.bloodGroup) {
-        alert("Please fill all required fields.");
-        return;
-        }
+    if (!form.guardianPhone || !form.requiredDate || !form.hospitalName || !form.bloodGroup) {
+      alert("Please fill all required fields.");
+      return;
+    }
 
-        // Simulate submission (in real app → send to backend/API here)
-        console.log("Blood request submitted:", form);
+    try {
+      const res = await fetch("http://localhost:5000/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      });
 
-        // No popup → directly go back to homepage
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Request submitted successfully!");
         navigate("/homepage");
-    };
+      } else {
+        alert("Failed to submit request");
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+  };
 
   return (
     <div className="find-donor-page">
