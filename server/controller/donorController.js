@@ -2,34 +2,36 @@ import Donor from "../models/Donor.js";
 import User from "../models/User.js";
 
 // Get all eligible donors
+// donorController.js
 export const getEligibleDonors = async (req, res) => {
   try {
     const { bloodGroup, division, district } = req.query;
     
     let query = { isEligible: true, available: true };
     
-    // Filter by blood group if provided
     if (bloodGroup && bloodGroup !== 'All') {
       query.bloodGroup = bloodGroup;
     }
-    
-    // Filter by location if provided
-    if (division) {
-      query.division = division;
-    }
-    if (district) {
-      query.district = district;
-    }
+    if (division) query.division = division;
+    if (district) query.district = district;
     
     const donors = await Donor.find(query)
-      .sort({ createdAt: -1 })
-      .select('-__v');
-    
+      .sort({ lastActive: -1 })
+      .select('fullName bloodGroup division district cityArea lastDonation available lastActive')
+      .lean();
+
+    console.log("=== Donors sent to frontend ===");
+    console.log("Total donors:", donors.length);
+    if (donors.length > 0) {
+      console.log("First donor lastActive:", donors[0].lastActive);
+    }
+
     res.status(200).json({
       success: true,
-      donors: donors,
+      donors: donors,      
       count: donors.length
     });
+
   } catch (error) {
     console.error("Get donors error:", error);
     res.status(500).json({

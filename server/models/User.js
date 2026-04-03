@@ -10,7 +10,8 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   bloodGroup: { type: String, default: '' },
   profilePic: { type: String, default: '' },
-  
+  lastActive: { type: Date, default: Date.now},
+
   // Eligibility related fields
   permanentDisqual: { type: Boolean, default: false },
   basicEligible: { type: Boolean, default: false }, // Changed default to false

@@ -18,6 +18,7 @@ export const getUserProfile = async (req, res) => {
       cityArea: user.cityArea || '',
       bloodGroup: user.bloodGroup || '',
       profilePic: user.profilePic || '',
+      lastActive: user.lastActive,
       
       // Eligibility data
       permanentDisqual: user.permanentDisqual || false,
@@ -43,7 +44,7 @@ export const updateUserProfile = async (req, res) => {
     const user = req.user;
     
     // Update user fields
-    const allowedUserFields = ['fullName', 'division', 'district', 'cityArea', 'bloodGroup', 'profilePic'];
+    const allowedUserFields = ['fullName', 'division', 'district', 'cityArea', 'bloodGroup', 'profilePic', 'lastActive'];
     
     allowedUserFields.forEach(key => {
       if (updates[key] !== undefined && updates[key] !== '') {

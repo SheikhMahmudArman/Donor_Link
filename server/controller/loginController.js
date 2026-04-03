@@ -18,6 +18,11 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid password" });
     }
 
+    // Update last active time on every login
+    user.lastActive = new Date();
+    user.lastLogin = new Date();
+    await user.save();
+    
     // Create token
     const token = jwt.sign(
       { id: user._id, emailOrPhone: user.emailOrPhone },
@@ -36,7 +41,8 @@ export const loginUser = async (req, res) => {
       bloodGroup: user.bloodGroup,
       profilePic: user.profilePic,
       permanentDisqual: user.permanentDisqual,
-      basicEligible: user.basicEligible
+      basicEligible: user.basicEligible,
+      lastActive: user.lastActive,
     };
 
     res.status(200).json({

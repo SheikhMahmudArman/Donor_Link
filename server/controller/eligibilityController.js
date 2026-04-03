@@ -55,6 +55,7 @@ export const saveEligibility = async (req, res) => {
         donor.district = district || user.district;
         donor.cityArea = cityArea || user.cityArea;
         donor.lastDonation = lastDonation || 'never';
+        donor.lastActive = new Date();
         await donor.save();
       } else {
         donor = new Donor({
@@ -66,7 +67,8 @@ export const saveEligibility = async (req, res) => {
           cityArea: cityArea || user.cityArea,
           lastDonation: lastDonation || 'never',
           isEligible: true,
-          available: true
+          available: true,
+          lastActive: new Date(),
         });
         await donor.save();
       }
@@ -74,7 +76,11 @@ export const saveEligibility = async (req, res) => {
       // User is not eligible, mark as unavailable
       await Donor.findOneAndUpdate(
         { userId: user._id },
-        { isEligible: false, available: false },
+        { 
+          isEligible: false, 
+          available: false,
+          lastActive: new Date()
+        },
         { upsert: true }
       );
     }
@@ -99,7 +105,8 @@ export const saveEligibility = async (req, res) => {
         division: user.division,
         district: user.district,
         cityArea: user.cityArea,
-        bloodGroup: user.bloodGroup
+        bloodGroup: user.bloodGroup,
+        lastActive: user.lastActive
       }
     });
     

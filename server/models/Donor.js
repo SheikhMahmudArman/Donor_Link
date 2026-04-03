@@ -32,6 +32,10 @@ const donorSchema = new Schema({
     type: String,
     default: 'never'
   },
+  lastActive: {
+    type: Date,
+    default: Date.now
+  },
   available: {
     type: Boolean,
     default: true

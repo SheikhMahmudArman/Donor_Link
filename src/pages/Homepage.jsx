@@ -101,6 +101,26 @@ function Homepage() {
         return `${lastDonation} months ago`;
     }
 
+    function getLastActiveTime(lastActive) {
+        if (!lastActive) return "Unknown";
+
+        const now = new Date();
+        const last = new Date(lastActive);
+        const diffMs = now - last;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins <= 5) return "Active now";
+        if (diffMins < 60) return `${diffMins} min ago`;
+        
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+
+        return "A while ago";
+    }
+
     if (loading) {
         return (
             <div className="homepage-container">
@@ -237,6 +257,12 @@ function Homepage() {
                                         <div>
                                             <strong>Last Donation:</strong> 
                                             <span>{formatLastDonation(donor.lastDonation)}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Last Active:</strong> 
+                                            <span className={`last-active ${getLastActiveTime(donor.lastActive) === "Active now" ? 'active-now' : ''}`}>
+                                                {getLastActiveTime(donor.lastActive)}
+                                            </span>
                                         </div>
                                     </div>
                                     <button className="contact-btn" onClick={() => handleContactDonor(donor)}>
