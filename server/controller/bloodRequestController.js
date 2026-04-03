@@ -18,12 +18,15 @@ export const createBloodRequest = async (req, res) => {
 
     // Find matching donors
     const matchingDonors = await Donor.find({
-      bloodGroup: requestData.bloodGroup,
-      division: requestData.division,
-      isEligible: true,
-      available: true
-    }).select('fullName bloodGroup division district cityArea lastActive lastDonation')
-      .limit(20);   // limit to avoid too many
+        bloodGroup: requestData.bloodGroup,
+        division: requestData.division,
+        district: requestData.district,
+        isEligible: true,
+        available: true
+    })
+    .sort({ lastActive: -1 })
+    .limit(20)
+    .select('fullName bloodGroup division district cityArea lastActive lastDonation');
 
     res.status(201).json({
       success: true,
@@ -46,7 +49,10 @@ export const sendRequestToDonor = async (req, res) => {
 
     const bloodRequest = await BloodRequest.findById(requestId);
     if (!bloodRequest) return res.status(404).json({ success: false, error: "Request not found" });
-
+    
+    if (bloodRequest.seekerId.toString() !== seekerId) {
+        return res.status(403).json({ success: false, error: "Unauthorized" });
+    }
     // Check limit
     if (bloodRequest.requestedDonors.length >= 5) {
       return res.status(400).json({ success: false, error: "You can request maximum 5 donors" });
@@ -56,6 +62,11 @@ export const sendRequestToDonor = async (req, res) => {
     const alreadyRequested = bloodRequest.requestedDonors.some(r => r.donorId.toString() === donorId);
     if (alreadyRequested) {
       return res.status(400).json({ success: false, error: "Already requested this donor" });
+    }
+
+    const donor = await Donor.findById(donorId);
+    if (!donor || !donor.available || !donor.isEligible) {
+        return res.status(400).json({ success: false, error: "Donor not available" });
     }
 
     bloodRequest.requestedDonors.push({
@@ -75,14 +86,22 @@ export const sendRequestToDonor = async (req, res) => {
   }
 };
 
+
 // Get Pending Requests for Donor (Notification)
 export const getPendingRequestsForDonor = async (req, res) => {
   try {
-    const donorId = req.user.id;   // We will link donorId with userId later if needed
+    const donor = await Donor.findOne({ userId: req.user.id });
+    if (!donor) {
+      return res.status(404).json({ success: false, error: "Donor not found" });
+    }
 
     const requests = await BloodRequest.find({
-      "requestedDonors.donorId": donorId,
-      "requestedDonors.status": "pending"
+      requestedDonors: {
+        $elemMatch: {
+          donorId: donor._id,
+          status: "pending"
+        }
+      }
     }).populate('seekerId', 'fullName emailOrPhone');
 
     res.status(200).json({
@@ -98,13 +117,20 @@ export const getPendingRequestsForDonor = async (req, res) => {
 // Accept Request by Donor
 export const acceptBloodRequest = async (req, res) => {
   try {
-    const { requestId, donorId } = req.body;
+    const { requestId } = req.body;
+
+    const donor = await Donor.findOne({ userId: req.user.id });
+    if (!donor) {
+      return res.status(404).json({ success: false, error: "Donor not found" });
+    }
 
     const bloodRequest = await BloodRequest.findById(requestId);
-    if (!bloodRequest) return res.status(404).json({ success: false, error: "Request not found" });
+    if (!bloodRequest) {
+      return res.status(404).json({ success: false, error: "Request not found" });
+    }
 
     const donorEntry = bloodRequest.requestedDonors.find(
-      r => r.donorId.toString() === donorId && r.status === "pending"
+      r => r.donorId.toString() === donor._id.toString() && r.status === "pending"
     );
 
     if (!donorEntry) {
@@ -113,11 +139,19 @@ export const acceptBloodRequest = async (req, res) => {
 
     donorEntry.status = "accepted";
 
+    bloodRequest.status = "fulfilled";
+
+    bloodRequest.requestedDonors.forEach(r => {
+      if (r.donorId.toString() !== donor._id.toString() && r.status === "pending") {
+        r.status = "expired";
+      }
+    });
+
     await bloodRequest.save();
 
     res.status(200).json({
       success: true,
-      message: "Request accepted successfully. You can now chat with the seeker."
+      message: "Request accepted successfully"
     });
 
   } catch (error) {
@@ -125,9 +159,33 @@ export const acceptBloodRequest = async (req, res) => {
   }
 };
 
+export const getPendingRequestCount = async (req, res) => {
+  try {
+    const donor = await Donor.findOne({ userId: req.user.id });
+    if (!donor) {
+      return res.json({ count: 0 });
+    }
+
+    const count = await BloodRequest.countDocuments({
+      requestedDonors: {
+        $elemMatch: {
+          donorId: donor._id,
+          status: "pending"
+        }
+      }
+    });
+
+    res.json({ count });
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get count" });
+  }
+};
+
 export default {
   createBloodRequest,
   sendRequestToDonor,
   getPendingRequestsForDonor,
-  acceptBloodRequest
+  acceptBloodRequest,
+  getPendingRequestCount
 };

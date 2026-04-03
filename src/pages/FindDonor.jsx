@@ -26,36 +26,65 @@ function FindDonor() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!form.guardianPhone || !form.requiredDate || !form.hospitalName || !form.bloodGroup) {
-      alert("Please fill all required fields.");
-      return;
+  if (!form.guardianPhone || !form.requiredDate || !form.hospitalName || !form.bloodGroup) {
+    alert("Please fill all required fields.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");   // GET TOKEN
+
+    const res = await fetch("http://localhost:5000/api/requests", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`   // SEND TOKEN
+      },
+      body: JSON.stringify(form)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Request submitted successfully!");
+      
+      // Fetch matching donors
+      const donorRes = await fetch(
+        `http://localhost:5000/api/donors?bloodGroup=${form.bloodGroup}&area=${form.area}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+      // In FindDonor.jsx after fetching matching donors
+      const matchingDonors = await fetch(
+        `http://localhost:5000/api/donors?bloodGroup=${form.bloodGroup}&area=${form.area}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      ).then(res => res.json());
+
+      navigate("/homepage", { state: { matchingDonors } });
+      
+      const donors = await donorRes.json();
+
+      // Pass donors to the homepage, or store in state/context
+      localStorage.setItem("matchingDonors", JSON.stringify(donors));
+
+      navigate("/homepage"); // Homepage can read matching donors from localStorage
+    
     }
 
-    try {
-      const res = await fetch("http://localhost:5000/api/requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form)
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("Request submitted successfully!");
-        navigate("/homepage");
-      } else {
-        alert("Failed to submit request");
-      }
-
-    } catch (error) {
-      console.error(error);
-      alert("Server error");
-    }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+};
 
   return (
     <div className="find-donor-page">

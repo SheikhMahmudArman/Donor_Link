@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import '../styles/Homepage.css';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const bloodGroups = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 function Homepage() {
     const [selectedBloodGroup, setSelectedBloodGroup] = useState('All');
-    const [donors, setDonors] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const location = useLocation();
+    const [donors, setDonors] = useState(Array.isArray(location.state?.matchingDonors) ? location.state.matchingDonors : []);
+    const [loading, setLoading] = useState(!location.state?.matchingDonors);
     const [stats, setStats] = useState({
         totalDonors: 0,
         recentDonors: 0,
@@ -70,7 +71,9 @@ function Homepage() {
             return;
         }
         
-        fetchDonors();
+        if (!location.state?.matchingDonors || donors.length === 0) {
+            fetchDonors(); // only fetch if no matching donors passed or if no donors
+        }
         fetchStats();
     }, [selectedBloodGroup, navigate]);
 
