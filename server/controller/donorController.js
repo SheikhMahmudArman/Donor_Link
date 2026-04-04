@@ -1,8 +1,6 @@
 import Donor from "../models/Donor.js";
 import User from "../models/User.js";
 
-// Get all eligible donors
-// donorController.js
 export const getEligibleDonors = async (req, res) => {
   try {
     const { bloodGroup, division, district } = req.query;
@@ -17,13 +15,14 @@ export const getEligibleDonors = async (req, res) => {
     
     const donors = await Donor.find(query)
       .sort({ lastActive: -1 })
-      .select('fullName bloodGroup division district cityArea lastDonation available lastActive')
+      .select('fullName bloodGroup division district cityArea lastDonation available lastActive userId')  // ← ADD userId here
       .lean();
 
     console.log("=== Donors sent to frontend ===");
     console.log("Total donors:", donors.length);
     if (donors.length > 0) {
-      console.log("First donor lastActive:", donors[0].lastActive);
+      console.log("First donor:", donors[0]);
+      console.log("First donor userId:", donors[0].userId);
     }
 
     res.status(200).json({

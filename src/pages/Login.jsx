@@ -44,7 +44,13 @@ function Login() {
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(data.user));
+    // FIX: Ensure user object has _id field
+    const userData = {
+      ...data.user,
+      _id: data.user.id || data.user._id,  // Make sure _id exists
+    };
+    
+    localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", data.token); 
     navigate("/homepage");
 

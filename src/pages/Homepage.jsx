@@ -18,22 +18,24 @@ function Homepage() {
     const navigate = useNavigate();
 
     // FIXED: Better way to get current user
-    const getCurrentUser = () => {
-        try {
-            const userStr = localStorage.getItem('user');
-            if (!userStr) return null;
-            return JSON.parse(userStr);
-        } catch (e) {
-            console.error("Error parsing user:", e);
-            return null;
-        }
-    };
+   const getCurrentUser = () => {
+    try {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return null;
+        const user = JSON.parse(userStr);
+        console.log("Current user from localStorage:", user);
+        return user;
+    } catch (e) {
+        console.error("Error parsing user:", e);
+        return null;
+    }
+};
 
-    const getCurrentUserId = () => {
-        const user = getCurrentUser();
-        return user?._id || null;
-    };
-
+const getCurrentUserId = () => {
+    const user = getCurrentUser();
+    // Check both _id and id (depending on what your backend returns)
+    return user?._id || user?.id || null;
+};
     const fetchDonors = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -123,69 +125,98 @@ function Homepage() {
         navigate("/chat");
     }
 
-    async function handleContactDonor(donor) {
-        console.log("=== Contact Donor Debug ===");
-        console.log("Donor:", donor);
-
-        const currentUser = getCurrentUser();
-        const currentUserId = currentUser?._id;
-
-        console.log("Current User from localStorage:", currentUser);
-        console.log("Current User ID:", currentUserId);
-
-        if (!currentUserId) {
-            console.log("NO USER ID FOUND!");
-            alert("You are not logged in! Please login first.");
-            navigate('/login');
-            return;
-        }
-
-        if (currentUserId === donor._id) {
-            alert("You cannot chat with yourself!");
-            return;
-        }
-
-        setSendingInvite(prev => ({ ...prev, [donor._id]: true }));
-
-        try {
-            const token = localStorage.getItem('token');
-            console.log("Sending invite with token:", token ? "Yes" : "No");
-
-            const response = await fetch('http://localhost:5000/api/chat/invite', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token ? `Bearer ${token}` : ''
-                },
-                body: JSON.stringify({
-                    senderId: currentUserId,
-                    receiverId: donor._id
-                })
-            });
-
-            const data = await response.json();
-            console.log("Invite response status:", response.status);
-            console.log("Invite response data:", data);
-
-            if (response.ok) {
-                alert(`Invitation sent to ${donor.fullName}!`);
-                navigate('/chat');
-            } else {
-                if (data.error === "Already invited") {
-                    alert(`You already have a pending invitation with ${donor.fullName}.`);
-                    navigate('/chat');
-                } else {
-                    alert(data.error || "Failed to send invitation");
-                }
-            }
-        } catch (error) {
-            console.error("Error sending invitation:", error);
-            alert("Network error. Please check if backend is running on port 5000");
-        } finally {
-            setSendingInvite(prev => ({ ...prev, [donor._id]: false }));
-        }
+    
+async function handleContactDonor(donor) {
+    console.log("=== Contact Donor Debug ===");
+    console.log("Donor object:", donor);
+    console.log("Donor userId:", donor.userId);
+    
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        alert("Please login first");
+        navigate('/login');
+        return;
     }
 
+    // Check if donor has userId
+    if (!donor.userId) {
+        console.error("Donor has no userId:", donor);
+        alert("This donor's user information is missing. Please try again later.");
+        return;
+    }
+
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        alert("User data not found. Please login again.");
+        navigate('/login');
+        return;
+    }
+    
+    let currentUser;
+    try {
+        currentUser = JSON.parse(userStr);
+        console.log("Current user:", currentUser);
+    } catch (e) {
+        console.error("Error parsing user:", e);
+        alert("Invalid user data. Please login again.");
+        navigate('/login');
+        return;
+    }
+    
+    const currentUserId = currentUser._id || currentUser.id;
+    console.log("Current User ID:", currentUserId);
+    
+    if (!currentUserId) {
+        alert("User ID not found. Please login again.");
+        navigate('/login');
+        return;
+    }
+
+    if (currentUserId === donor.userId) {
+        alert("You cannot chat with yourself!");
+        return;
+    }
+
+    setSendingInvite(prev => ({ ...prev, [donor._id]: true }));
+
+    try {
+        const response = await fetch('http://localhost:5000/api/chat/invite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                senderId: currentUserId,
+                receiverId: donor.userId  // Now this will have a value
+            })
+        });
+
+        const data = await response.json();
+        console.log("Invite response:", response.status, data);
+
+        if (response.ok) {
+            alert(`Invitation sent to ${donor.fullName}!`);
+            navigate('/chat');
+        } else {
+            if (data.error === "Already invited") {
+                alert(`You already have a pending invitation with ${donor.fullName}.`);
+                navigate('/chat');
+            } else if (data.error === "Already in conversation") {
+                alert(`You already have an active conversation with ${donor.fullName}.`);
+                navigate('/chat');
+            } else {
+                alert(data.error || "Failed to send invitation");
+            }
+        }
+    } catch (error) {
+        console.error("Error sending invitation:", error);
+        alert("Network error: " + error.message);
+    } finally {
+        setSendingInvite(prev => ({ ...prev, [donor._id]: false }));
+    }
+}
     function formatLastDonation(lastDonation) {
         if (lastDonation === 'never') return 'Never donated';
         if (lastDonation === '3') return '3+ months ago';

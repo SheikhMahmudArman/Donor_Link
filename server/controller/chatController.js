@@ -2,6 +2,7 @@
 import Invite from "../models/Invite.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
+import User from "../models/User.js";  // IMPORTANT: Added this import
 
 // =========================
 // SEND INVITE
@@ -10,8 +11,27 @@ export const sendInvite = async (req, res) => {
     try {
         const { senderId, receiverId } = req.body;
 
+        console.log("=== Send Invite Debug ===");
+        console.log("Request body:", req.body);
+        
         if (!senderId || !receiverId) {
             return res.status(400).json({ error: "Missing senderId or receiverId" });
+        }
+
+        // Check if sender and receiver are same
+        if (senderId === receiverId) {
+            return res.status(400).json({ error: "Cannot invite yourself" });
+        }
+
+        // Check if users exist
+        const sender = await User.findById(senderId);
+        const receiver = await User.findById(receiverId);
+        
+        if (!sender) {
+            return res.status(404).json({ error: "Sender not found" });
+        }
+        if (!receiver) {
+            return res.status(404).json({ error: "Receiver not found" });
         }
 
         // Check if there's already a pending invite
@@ -27,7 +47,7 @@ export const sendInvite = async (req, res) => {
 
         const invite = await Invite.create({ senderId, receiverId });
 
-        res.json(invite); // ✅ just return invite; conversation created on ACCEPT
+        res.json(invite);
     } catch (err) {
         console.error("Send Invite Error:", err);
         res.status(500).json({ error: "Server error" });
@@ -117,13 +137,13 @@ export const getConversations = async (req, res) => {
             participants: userId
         }).populate("participants", "fullName");
 
-        // ✅ Shape so frontend gets participantName and id (not _id)
         const shaped = conversations.map(conv => {
             const other = conv.participants.find(
                 p => p._id.toString() !== userId
             );
             return {
                 id: conv._id,
+                participantId: other?._id,
                 participantName: other?.fullName || "Unknown",
                 lastMessage: conv.lastMessage,
                 lastMessageAt: conv.lastMessageAt,
@@ -155,7 +175,6 @@ export const sendMessage = async (req, res) => {
             lastMessageAt: new Date()
         });
 
-        // ✅ Return shaped message with id (not _id) for frontend consistency
         res.json({
             id: msg._id,
             conversationId: msg.conversationId,
@@ -176,14 +195,13 @@ export const getMessages = async (req, res) => {
     try {
         const messages = await Message.find({
             conversationId: req.params.id
-        }).sort({ createdAt: 1 }); // ✅ oldest first so chat reads top-to-bottom
+        }).sort({ createdAt: 1 });
 
         const conversation = await Conversation.findById(req.params.id);
         if (!conversation) {
             return res.status(404).json({ error: "Conversation not found" });
         }
 
-        // ✅ Shape messages so senderId is a plain string for === comparison in frontend
         const shapedMessages = messages.map(msg => ({
             id: msg._id,
             senderId: msg.senderId.toString(),
