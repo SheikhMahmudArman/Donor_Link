@@ -35,6 +35,7 @@ function App() {
         <Route path="/partners" element={<Partners />} />
         <Route path="/maps" element={<Maps />} />
         <Route path="/testimonial" element={< Testimonials />} />
+        <Route path="/chat/:conversationId" element={<Chat />} />
       </Routes>
     </BrowserRouter>
   );

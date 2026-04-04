@@ -19,7 +19,7 @@ import eligibilityRoutes from "./routes/eligibilityRoutes.js"; // New import
 import donorRoutes from "./routes/donorRoutes.js"; // New import
 import authRoutesRegister from "./routes/authRoutesRegister.js";
 import bloodRequestRoutes from "./routes/bloodRequestRoutes.js";
-
+import chatRoutes from "./routes/chatRoutes.js";
 config();
 
 const app = express();
@@ -41,6 +41,8 @@ app.use("/api/eligibility", eligibilityRoutes); // New route
 app.use("/api/donors", donorRoutes); // New route for donors
 app.use("/api/auth", authRoutesRegister);
 app.use("/api/requests", bloodRequestRoutes);
+
+app.use("/api/chat", chatRoutes);
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });

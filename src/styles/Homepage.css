@@ -486,10 +486,12 @@ body {
     background: linear-gradient(135deg, #b71c1c, #8b0000);
     box-shadow: 0 6px 14px rgb(139 0 0 / 0.5);
 }
+
 .last-active.active-now {
-  color: #22c55e;
-  font-weight: 600;
+    color: #22c55e;
+    font-weight: 600;
 }
+
 /* ===== MOBILE RESPONSIVE ADDITIONS ===== */
 @media screen and (max-width: 1024px) {
     .header {

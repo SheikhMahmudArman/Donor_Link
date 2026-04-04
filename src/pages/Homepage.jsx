@@ -14,24 +14,41 @@ function Homepage() {
         recentDonors: 0,
         donorsByBloodGroup: {}
     });
+    const [sendingInvite, setSendingInvite] = useState({});
     const navigate = useNavigate();
 
-    // Fetch donors from server
+    // FIXED: Better way to get current user
+    const getCurrentUser = () => {
+        try {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return null;
+            return JSON.parse(userStr);
+        } catch (e) {
+            console.error("Error parsing user:", e);
+            return null;
+        }
+    };
+
+    const getCurrentUserId = () => {
+        const user = getCurrentUser();
+        return user?._id || null;
+    };
+
     const fetchDonors = async () => {
         try {
             const token = localStorage.getItem('token');
-            const url = selectedBloodGroup === 'All' 
+            const url = selectedBloodGroup === 'All'
                 ? 'http://localhost:5000/api/donors'
                 : `http://localhost:5000/api/donors?bloodGroup=${selectedBloodGroup}`;
-            
+
             const response = await fetch(url, {
                 headers: {
                     'Authorization': token ? `Bearer ${token}` : ''
                 }
             });
-            
+
             const data = await response.json();
-            
+
             if (response.ok) {
                 setDonors(data.donors);
             } else {
@@ -44,7 +61,6 @@ function Homepage() {
         }
     };
 
-    // Fetch donor statistics
     const fetchStats = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -53,9 +69,9 @@ function Homepage() {
                     'Authorization': token ? `Bearer ${token}` : ''
                 }
             });
-            
+
             const data = await response.json();
-            
+
             if (response.ok) {
                 setStats(data.stats);
             }
@@ -65,14 +81,22 @@ function Homepage() {
     };
 
     useEffect(() => {
-        // Check authentication
-        if (!localStorage.getItem('token')) {
+        const token = localStorage.getItem('token');
+        const user = getCurrentUser();
+
+        console.log("=== Homepage Debug ===");
+        console.log("Token exists?", !!token);
+        console.log("User exists?", !!user);
+        console.log("User ID:", user?._id);
+
+        if (!token || !user) {
+            console.log("No token or user, redirecting to login");
             navigate('/login', { replace: true });
             return;
         }
-        
+
         if (!location.state?.matchingDonors || donors.length === 0) {
-            fetchDonors(); // only fetch if no matching donors passed or if no donors
+            fetchDonors();
         }
         fetchStats();
     }, [selectedBloodGroup, navigate]);
@@ -80,7 +104,7 @@ function Homepage() {
     function getInitials(name) {
         return name.split(' ').map(n => n[0]).join('').toUpperCase();
     }
-    
+
     function handleLogout() {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
@@ -88,15 +112,80 @@ function Homepage() {
     }
 
     function handleChat() {
+        const token = localStorage.getItem('token');
+        const user = getCurrentUser();
+
+        if (!token || !user) {
+            alert("Please login first");
+            navigate('/login');
+            return;
+        }
         navigate("/chat");
     }
 
-    function handleContactDonor(donor) {
-        // This should open chat or contact form
-        alert(`Contact ${donor.fullName} - Chat feature coming soon!`);
+    async function handleContactDonor(donor) {
+        console.log("=== Contact Donor Debug ===");
+        console.log("Donor:", donor);
+
+        const currentUser = getCurrentUser();
+        const currentUserId = currentUser?._id;
+
+        console.log("Current User from localStorage:", currentUser);
+        console.log("Current User ID:", currentUserId);
+
+        if (!currentUserId) {
+            console.log("NO USER ID FOUND!");
+            alert("You are not logged in! Please login first.");
+            navigate('/login');
+            return;
+        }
+
+        if (currentUserId === donor._id) {
+            alert("You cannot chat with yourself!");
+            return;
+        }
+
+        setSendingInvite(prev => ({ ...prev, [donor._id]: true }));
+
+        try {
+            const token = localStorage.getItem('token');
+            console.log("Sending invite with token:", token ? "Yes" : "No");
+
+            const response = await fetch('http://localhost:5000/api/chat/invite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                },
+                body: JSON.stringify({
+                    senderId: currentUserId,
+                    receiverId: donor._id
+                })
+            });
+
+            const data = await response.json();
+            console.log("Invite response status:", response.status);
+            console.log("Invite response data:", data);
+
+            if (response.ok) {
+                alert(`Invitation sent to ${donor.fullName}!`);
+                navigate('/chat');
+            } else {
+                if (data.error === "Already invited") {
+                    alert(`You already have a pending invitation with ${donor.fullName}.`);
+                    navigate('/chat');
+                } else {
+                    alert(data.error || "Failed to send invitation");
+                }
+            }
+        } catch (error) {
+            console.error("Error sending invitation:", error);
+            alert("Network error. Please check if backend is running on port 5000");
+        } finally {
+            setSendingInvite(prev => ({ ...prev, [donor._id]: false }));
+        }
     }
 
-    // Format last donation date
     function formatLastDonation(lastDonation) {
         if (lastDonation === 'never') return 'Never donated';
         if (lastDonation === '3') return '3+ months ago';
@@ -114,10 +203,10 @@ function Homepage() {
 
         if (diffMins <= 5) return "Active now";
         if (diffMins < 60) return `${diffMins} min ago`;
-        
+
         const diffHours = Math.floor(diffMins / 60);
         if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        
+
         const diffDays = Math.floor(diffHours / 24);
         if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 
@@ -148,7 +237,6 @@ function Homepage() {
 
     return (
         <>
-            {/* Header */}
             <header className="header">
                 <div className="header-left">
                     <div>
@@ -171,9 +259,7 @@ function Homepage() {
                 </div>
             </header>
 
-            {/* Main Container */}
             <div className="main-container">
-                {/* Sidebar */}
                 <aside className="sidebar">
                     <h2>Quick Actions</h2>
                     <button className="logout-btn" onClick={handleLogout}>
@@ -188,15 +274,15 @@ function Homepage() {
                     <div className="stats-card">
                         <h3>Platform Impact</h3>
                         <div>
-                            <span>Active Donors</span> 
+                            <span>Active Donors</span>
                             <span>{stats.totalDonors || 0}</span>
                         </div>
                         <div>
-                            <span>Lives Saved</span> 
+                            <span>Lives Saved</span>
                             <span>{Math.floor((stats.totalDonors || 0) * 2.5)}</span>
                         </div>
                         <div>
-                            <span>New This Month</span> 
+                            <span>New This Month</span>
                             <span>{stats.recentDonors || 0}</span>
                         </div>
                     </div>
@@ -207,7 +293,6 @@ function Homepage() {
                     </div>
                 </aside>
 
-                {/* Main Content */}
                 <main className="main-content">
                     <div className="action-bar">
                         <div className="blood-filter">
@@ -250,26 +335,30 @@ function Homepage() {
                                     </div>
                                     <div className="donor-details">
                                         <div>
-                                            <strong>Blood Group:</strong> 
+                                            <strong>Blood Group:</strong>
                                             <span>{donor.bloodGroup}</span>
                                         </div>
                                         <div>
-                                            <strong>Location:</strong> 
+                                            <strong>Location:</strong>
                                             <span>{donor.district}, {donor.division}</span>
                                         </div>
                                         <div>
-                                            <strong>Last Donation:</strong> 
+                                            <strong>Last Donation:</strong>
                                             <span>{formatLastDonation(donor.lastDonation)}</span>
                                         </div>
                                         <div>
-                                            <strong>Last Active:</strong> 
+                                            <strong>Last Active:</strong>
                                             <span className={`last-active ${getLastActiveTime(donor.lastActive) === "Active now" ? 'active-now' : ''}`}>
                                                 {getLastActiveTime(donor.lastActive)}
                                             </span>
                                         </div>
                                     </div>
-                                    <button className="contact-btn" onClick={() => handleContactDonor(donor)}>
-                                        Contact
+                                    <button
+                                        className="contact-btn"
+                                        onClick={() => handleContactDonor(donor)}
+                                        disabled={sendingInvite[donor._id] || donor._id === getCurrentUserId()}
+                                    >
+                                        {sendingInvite[donor._id] ? 'Sending...' : 'Contact'}
                                     </button>
                                 </div>
                             ))
