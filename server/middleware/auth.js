@@ -12,13 +12,13 @@ export const verifyToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Load full user from DB
-    const user = await User.findById(decoded.id).select('-password'); // Exclude password
+    const user = await User.findById(decoded.id).select('-password'); 
     
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    req.user = user; // Mongoose document
+    req.user = user; 
     next();
   } catch (err) {
     console.error("Auth error:", err);

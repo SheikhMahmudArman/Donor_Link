@@ -6,7 +6,7 @@ import User from "../models/User.js";
 // Create Blood Request + Find Matching Donors
 export const createBloodRequest = async (req, res) => {
   try {
-    const seekerId = req.user.id;   // from verifyToken middleware
+    const seekerId = req.user.id;   
 
     const requestData = {
       ...req.body,
@@ -32,7 +32,7 @@ export const createBloodRequest = async (req, res) => {
       success: true,
       message: "Blood request submitted successfully",
       request: bloodRequest,
-      matchingDonors   // ← This will be shown to seeker
+      matchingDonors  
     });
 
   } catch (error) {
@@ -41,7 +41,7 @@ export const createBloodRequest = async (req, res) => {
   }
 };
 
-// Send Request to a Donor (max 5)
+
 export const sendRequestToDonor = async (req, res) => {
   try {
     const { requestId, donorId } = req.body;

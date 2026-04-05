@@ -33,7 +33,7 @@ function Homepage() {
 
 const getCurrentUserId = () => {
     const user = getCurrentUser();
-    // Check both _id and id (depending on what your backend returns)
+    
     return user?._id || user?.id || null;
 };
     const fetchDonors = async () => {
@@ -189,7 +189,7 @@ async function handleContactDonor(donor) {
             },
             body: JSON.stringify({
                 senderId: currentUserId,
-                receiverId: donor.userId  // Now this will have a value
+                receiverId: donor.userId  
             })
         });
 

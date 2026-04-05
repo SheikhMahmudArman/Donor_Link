@@ -1,4 +1,4 @@
-// chatRoutes.js - Add authentication middleware
+
 
 import express from "express";
 import {
@@ -16,7 +16,7 @@ import updateLastActive from "../middleware/updateLastActive.js";
 
 const router = express.Router();
 
-// All chat routes require authentication
+
 router.post("/invite", verifyToken, updateLastActive, sendInvite);
 router.get("/invites/:userId", verifyToken, updateLastActive, getInvites);
 router.post("/invite/:id/accept", verifyToken, updateLastActive, acceptInvite);

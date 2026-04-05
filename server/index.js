@@ -15,8 +15,8 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/donorRoutes.js";
 import authRoutesLogin from "./routes/authRoutesLogin.js";
 import userRoutes from "./routes/user.js";
-import eligibilityRoutes from "./routes/eligibilityRoutes.js"; // New import
-import donorRoutes from "./routes/donorRoutes.js"; // New import
+import eligibilityRoutes from "./routes/eligibilityRoutes.js"; 
+import donorRoutes from "./routes/donorRoutes.js"; 
 import authRoutesRegister from "./routes/authRoutesRegister.js";
 import bloodRequestRoutes from "./routes/bloodRequestRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
@@ -37,8 +37,8 @@ app.use(json());
 
 app.use("/api/auth", authRoutesLogin);
 app.use("/api/user", userRoutes);
-app.use("/api/eligibility", eligibilityRoutes); // New route
-app.use("/api/donors", donorRoutes); // New route for donors
+app.use("/api/eligibility", eligibilityRoutes); 
+app.use("/api/donors", donorRoutes); 
 app.use("/api/auth", authRoutesRegister);
 app.use("/api/requests", bloodRequestRoutes);
 

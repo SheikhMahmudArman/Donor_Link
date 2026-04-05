@@ -1,12 +1,11 @@
-// server/controller/chatController.js
+
 import Invite from "../models/Invite.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
-import User from "../models/User.js";  // IMPORTANT: Added this import
+import User from "../models/User.js"; 
 
-// =========================
 // SEND INVITE
-// =========================
+
 export const sendInvite = async (req, res) => {
     try {
         const { senderId, receiverId } = req.body;
@@ -54,9 +53,9 @@ export const sendInvite = async (req, res) => {
     }
 };
 
-// =========================
+
 // GET INVITES
-// =========================
+
 export const getInvites = async (req, res) => {
     try {
         const invites = await Invite.find({
@@ -76,9 +75,9 @@ export const getInvites = async (req, res) => {
     }
 };
 
-// =========================
+
 // ACCEPT INVITE
-// =========================
+
 export const acceptInvite = async (req, res) => {
     try {
         const invite = await Invite.findById(req.params.id);
@@ -87,7 +86,7 @@ export const acceptInvite = async (req, res) => {
         invite.status = "accepted";
         await invite.save();
 
-        // ✅ Avoid duplicate conversations
+        // Avoid duplicate conversations
         const existingConv = await Conversation.findOne({
             participants: { $all: [invite.senderId, invite.receiverId] }
         });
@@ -108,9 +107,8 @@ export const acceptInvite = async (req, res) => {
     }
 };
 
-// =========================
+
 // DECLINE INVITE
-// =========================
 export const declineInvite = async (req, res) => {
     try {
         const invite = await Invite.findById(req.params.id);
@@ -126,9 +124,8 @@ export const declineInvite = async (req, res) => {
     }
 };
 
-// =========================
+
 // GET CONVERSATIONS
-// =========================
 export const getConversations = async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -158,9 +155,8 @@ export const getConversations = async (req, res) => {
     }
 };
 
-// =========================
+
 // SEND MESSAGE
-// =========================
 export const sendMessage = async (req, res) => {
     try {
         const { conversationId, senderId, content } = req.body;
@@ -188,9 +184,8 @@ export const sendMessage = async (req, res) => {
     }
 };
 
-// =========================
+
 // GET MESSAGES
-// =========================
 export const getMessages = async (req, res) => {
     try {
         const messages = await Message.find({
@@ -221,10 +216,8 @@ export const getMessages = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
-
-// =========================
 // CONFIRM BLOOD
-// =========================
+
 export const confirmBlood = async (req, res) => {
     try {
         const { userId } = req.body;

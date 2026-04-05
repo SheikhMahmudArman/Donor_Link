@@ -18,19 +18,19 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid password" });
     }
 
-    // Update last active time on every login
+    
     user.lastActive = new Date();
     user.lastLogin = new Date();
     await user.save();
     
-    // Create token
+   
     const token = jwt.sign(
       { id: user._id, emailOrPhone: user.emailOrPhone },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // Send user data without password
+    
     const userData = {
       id: user._id,
       fullName: user.fullName || user.userName,
